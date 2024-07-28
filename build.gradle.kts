@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.23"
+    `java-library`
     `maven-publish`
     signing
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
@@ -9,33 +10,44 @@ group = "com.cjcrafter"
 version = "0.1.0"
 
 val githubOwner = "CJCrafter"
-val githubRepo = "VersionUtil"
+val githubRepo = "FoliaScheduler"
 
 repositories {
     mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    // 1.12.2 is the oldest version we plan on officially supporting
+    compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(8)
 }
 
-val javadocJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("javadoc")
-    from(tasks.named("javadoc"))
+
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
-val sourcesJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
+tasks {
+    jar {
+        // Include all compiled classes from subprojects
+        from(subprojects.map { it.sourceSets["main"].output })
+    }
+
+    javadoc {
+        if (JavaVersion.current().isJava9Compatible) {
+            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+        }
+    }
+
+    // Update sources JAR to include subproject sources
+    named<Jar>("sourcesJar") {
+        from(subprojects.map { it.sourceSets["main"].allSource })
+    }
 }
 
 nexusPublishing {
@@ -61,8 +73,6 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-            artifact(javadocJar.get())
-            artifact(sourcesJar.get())
 
             pom {
                 name.set(githubRepo)
@@ -71,6 +81,7 @@ publishing {
 
                 groupId = group.toString()
                 artifactId = githubRepo.lowercase()
+                print(artifactId)
 
                 licenses {
                     license {

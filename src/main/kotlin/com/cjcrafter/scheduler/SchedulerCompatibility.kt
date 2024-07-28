@@ -1,7 +1,5 @@
 package com.cjcrafter.scheduler
 
-import com.cjcrafter.scheduler.bukkit.BukkitServer
-import com.cjcrafter.scheduler.folia.FoliaServer
 import org.bukkit.Server
 import org.bukkit.plugin.Plugin
 
@@ -22,10 +20,18 @@ class SchedulerCompatibility(val plugin: Plugin) {
         // If such a method exists, use the Folia scheduler. Otherwise, use the Bukkit scheduler.
         var scheduler: ServerImplementation
         try {
-            Server::class.java.getMethod("isOwnedByCurrentRegion")
-            scheduler = FoliaServer(plugin)
-        } catch (e: NoSuchMethodException) {
-            scheduler = BukkitServer(plugin)
+            try {
+                Server::class.java.getMethod("isOwnedByCurrentRegion")
+                scheduler = Class.forName(javaClass.`package`.name + ".folia.FoliaServer")
+                    .getDeclaredConstructor(Plugin::class.java)
+                    .newInstance(plugin) as ServerImplementation
+            } catch (e: NoSuchMethodException) {
+                scheduler = Class.forName(javaClass.`package`.name + ".bukkit.BukkitServer")
+                    .getDeclaredConstructor(Plugin::class.java)
+                    .newInstance(plugin) as ServerImplementation
+            }
+        } catch (ex: Throwable) {
+            throw InternalError("Failed to initialize scheduler", ex)
         }
 
         this.scheduler = scheduler
