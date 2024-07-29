@@ -1,17 +1,18 @@
 package com.cjcrafter.scheduler
 
+import org.bukkit.Location
 import org.bukkit.Server
 import org.bukkit.plugin.Plugin
 
 /**
  * The main class of FoliaScheduler, provides methods for getting the server-specific schedulers.
  */
-class SchedulerCompatibility(val plugin: Plugin) {
+class FoliaCompatibility(val plugin: Plugin) {
 
     /**
      * The server-specific scheduler implementation
      */
-    val scheduler: ServerImplementation
+    val serverImplementation: ServerImplementation
 
     init {
         assertRelocated()
@@ -21,7 +22,7 @@ class SchedulerCompatibility(val plugin: Plugin) {
         var scheduler: ServerImplementation
         try {
             try {
-                Server::class.java.getMethod("isOwnedByCurrentRegion")
+                Server::class.java.getMethod("isOwnedByCurrentRegion", Location::class.java)
                 scheduler = Class.forName(javaClass.`package`.name + ".folia.FoliaServer")
                     .getDeclaredConstructor(Plugin::class.java)
                     .newInstance(plugin) as ServerImplementation
@@ -34,7 +35,7 @@ class SchedulerCompatibility(val plugin: Plugin) {
             throw InternalError("Failed to initialize scheduler", ex)
         }
 
-        this.scheduler = scheduler
+        this.serverImplementation = scheduler
     }
 
     private fun assertRelocated() {
