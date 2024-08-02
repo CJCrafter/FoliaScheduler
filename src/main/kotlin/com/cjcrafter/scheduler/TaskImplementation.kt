@@ -35,7 +35,7 @@ interface TaskImplementation<T : Any> {
     /**
      * Returns the callback from this task's execution.
      */
-    fun getCallback(): Optional<T>
+    fun getCallback(): T?
 
     /**
      * Returns a CompletableFuture that will be completed when the task has finished executing. For repeating tasks,
