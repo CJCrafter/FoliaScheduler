@@ -4,9 +4,12 @@ import com.cjcrafter.scheduler.SchedulerImplementation
 import com.cjcrafter.scheduler.TaskImplementation
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
+import org.jetbrains.annotations.ApiStatus
 import java.util.function.Consumer
+import java.util.function.Function
 
-class BukkitSyncScheduler(private val plugin: Plugin) : SchedulerImplementation {
+@ApiStatus.Internal
+internal class BukkitSyncScheduler(private val plugin: Plugin) : SchedulerImplementation {
     override fun execute(run: Runnable) {
         object : BukkitRunnable() {
             override fun run() {
@@ -15,11 +18,12 @@ class BukkitSyncScheduler(private val plugin: Plugin) : SchedulerImplementation 
         }.runTask(plugin)
     }
 
-    override fun run(consumer: Consumer<TaskImplementation>): TaskImplementation {
-        val taskImplementation = BukkitTask(plugin, false)
+    override fun <T : Any> run(function: Function<TaskImplementation<T>, T>): TaskImplementation<T> {
+        val taskImplementation = BukkitTask<T>(plugin, false)
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
-                consumer.accept(taskImplementation)
+                val callback = function.apply(taskImplementation)
+                taskImplementation.callback = callback
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTask(plugin)
@@ -28,11 +32,15 @@ class BukkitSyncScheduler(private val plugin: Plugin) : SchedulerImplementation 
         return taskImplementation
     }
 
-    override fun runDelayed(consumer: Consumer<TaskImplementation>, delay: Long): TaskImplementation {
-        val taskImplementation = BukkitTask(plugin, false)
+    override fun <T : Any> runDelayed(
+        function: Function<TaskImplementation<T>, T>,
+        delay: Long,
+    ): TaskImplementation<T> {
+        val taskImplementation = BukkitTask<T>(plugin, false)
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
-                consumer.accept(taskImplementation)
+                val callback = function.apply(taskImplementation)
+                taskImplementation.callback = callback
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskLater(plugin, delay)
@@ -41,11 +49,16 @@ class BukkitSyncScheduler(private val plugin: Plugin) : SchedulerImplementation 
         return taskImplementation
     }
 
-    override fun runAtFixedRate(consumer: Consumer<TaskImplementation>, delay: Long, period: Long): TaskImplementation {
-        val taskImplementation = BukkitTask(plugin, true)
+    override fun <T : Any> runAtFixedRate(
+        function: Function<TaskImplementation<T>, T>,
+        delay: Long,
+        period: Long,
+    ): TaskImplementation<T> {
+        val taskImplementation = BukkitTask<T>(plugin, true)
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
-                consumer.accept(taskImplementation)
+                val callback = function.apply(taskImplementation)
+                taskImplementation.callback = callback
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskTimer(plugin, delay, period)

@@ -5,9 +5,12 @@ import com.cjcrafter.scheduler.TaskImplementation
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
+import org.jetbrains.annotations.ApiStatus
 import java.util.function.Consumer
+import java.util.function.Function
 
-class BukkitEntityScheduler(
+@ApiStatus.Internal
+internal class BukkitEntityScheduler(
     private val plugin: Plugin,
     private val entity: Entity,
 ): EntitySchedulerImplementation {
@@ -29,20 +32,24 @@ class BukkitEntityScheduler(
         return true
     }
 
-    override fun run(consumer: Consumer<TaskImplementation>, retired: Runnable?): TaskImplementation? {
+    override fun <T : Any> run(
+        function: Function<TaskImplementation<T>, T>,
+        retired: Runnable?,
+    ): TaskImplementation<T>? {
         if (!entity.isValid) {
             retired?.run()
             return null
         }
 
-        val taskImplementation = BukkitTask(plugin, false)
+        val taskImplementation = BukkitTask<T>(plugin, false)
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
                 if (!entity.isValid) {
                     retired?.run()
                     return
                 }
-                consumer.accept(taskImplementation)
+                val callback = function.apply(taskImplementation)
+                taskImplementation.callback = callback
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTask(plugin)
@@ -51,24 +58,25 @@ class BukkitEntityScheduler(
         return taskImplementation
     }
 
-    override fun runDelayed(
-        consumer: Consumer<TaskImplementation>,
+    override fun <T : Any> runDelayed(
+        function: Function<TaskImplementation<T>, T>,
         retired: Runnable?,
-        delay: Long
-    ): TaskImplementation? {
+        delay: Long,
+    ): TaskImplementation<T>? {
         if (!entity.isValid) {
             retired?.run()
             return null
         }
 
-        val taskImplementation = BukkitTask(plugin, false)
+        val taskImplementation = BukkitTask<T>(plugin, false)
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
                 if (!entity.isValid) {
                     retired?.run()
                     return
                 }
-                consumer.accept(taskImplementation)
+                val callback = function.apply(taskImplementation)
+                taskImplementation.callback = callback
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskLater(plugin, delay)
@@ -77,25 +85,26 @@ class BukkitEntityScheduler(
         return taskImplementation
     }
 
-    override fun runAtFixedRate(
-        consumer: Consumer<TaskImplementation>,
+    override fun <T : Any> runAtFixedRate(
+        function: Function<TaskImplementation<T>, T>,
         retired: Runnable?,
         delay: Long,
         period: Long
-    ): TaskImplementation? {
+    ): TaskImplementation<T>? {
         if (!entity.isValid) {
             retired?.run()
             return null
         }
 
-        val taskImplementation = BukkitTask(plugin, true)
+        val taskImplementation = BukkitTask<T>(plugin, true)
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
                 if (!entity.isValid) {
                     retired?.run()
                     return
                 }
-                consumer.accept(taskImplementation)
+                val callback = function.apply(taskImplementation)
+                taskImplementation.callback = callback
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskTimer(plugin, delay, period)
