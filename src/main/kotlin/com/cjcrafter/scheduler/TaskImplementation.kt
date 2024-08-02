@@ -1,9 +1,11 @@
 package com.cjcrafter.scheduler
 
 import org.bukkit.plugin.Plugin
+import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.function.Function
 
-interface TaskImplementation {
+interface TaskImplementation<T : Any> {
 
     /**
      * The plugin that ran this task.
@@ -31,8 +33,13 @@ interface TaskImplementation {
     fun isRepeatingTask(): Boolean
 
     /**
+     * Returns the callback from this task's execution.
+     */
+    fun getCallback(): Optional<T>
+
+    /**
      * Returns a CompletableFuture that will be completed when the task has finished executing. For repeating tasks,
      * the future will be completed 1 time for each execution.
      */
-    fun asFuture(): CompletableFuture<TaskImplementation>
+    fun asFuture(): CompletableFuture<TaskImplementation<T>>
 }
