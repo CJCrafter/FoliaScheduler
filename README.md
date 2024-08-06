@@ -41,42 +41,47 @@ dependencies {
 ## Examples
 #### Modify an entity on the next tick
 ```java
-Plugin plugin = /* your plugin instance */;
-Entity entity = /* your entity */;
+    Plugin plugin = null;
+    Entity entity = null;
 
-// You should re-use this instance
-ServerImplementation scheduler = new FoliaCompatibility(plugin).getServerImplementation();
-scheduler.entity(entity).run(task -> {
-    entity.setVelocity(new Vector(0, 1, 0));    
-});
+    // You should re-use this instance
+    ServerImplementation scheduler = new FoliaCompatibility(plugin).getServerImplementation();
+    scheduler.entity(entity).run(() -> {
+        entity.setVelocity(new Vector(0, 1, 0));
+    }); 
 ```
 
 #### Execute an async task after 5 seconds
 ```java
-Plugin plugin = /* your plugin instance */;
+    Plugin plugin = null;
 
-// You should re-use this instance
-ServerImplementation scheduler = new FoliaCompatibility(plugin).getServerImplementation();
-scheduler.async().runDelayed(task -> {
-    plugin.getLogger().info("Yippee! I'm async!");    
-});
+    // You should re-use this instance
+    ServerImplementation scheduler = new FoliaCompatibility(plugin).getServerImplementation();
+    scheduler.async().runDelayed(task -> {
+        plugin.getLogger().info("This is the scheduled task! I'm async! " + task);
+    }, 5 * 20L);
 ```
 
 #### Doing some I/O operations with a callback
 ```java
-Plugin plugin = /* your plugin instance */;
-File file = /* your file */;
+    Plugin plugin = null;
+    File file = null;
 
-// You should re-use this instance
-ServerImplementation scheduler = new FoliaCompatibility(plugin).getServerImplementation();
-TaskImplementation scheduledTask = scheduler.async().runNow(task -> {
-    // Do some I/O operations
-});
+    // You should re-use this instance
+    ServerImplementation scheduler = new FoliaCompatibility(plugin).getServerImplementation();
+    TaskImplementation<String> scheduledTask = scheduler.async().runNow(task -> {
+        String contents = "Read the file";
+        return contents;
+    });
 
-// You can also get fancy with *thenCompose* and *thenAccept*
-scheduledTask.asFuture().thenAccept(task -> {
-    scheduler.sync().run(task -> {
-        plugin.getLogger().info("We did some I/O");
-    })
-});
+    // Use "thenCompose" to chain many tasks together
+    CompletableFuture<TaskImplementation<Void>> composed = scheduledTask.asFuture().thenCompose(task -> {
+        return scheduler.global().run(nextTask -> {
+            System.out.println("We're back on the global thread: " + scheduledTask.getCallback());
+        }).asFuture();
+    });
+        
+    composed.thenAccept(task -> {
+        System.out.println("We finished everything now!");
+    });
 ```

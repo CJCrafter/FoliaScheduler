@@ -2,33 +2,53 @@ package com.cjcrafter.scheduler.bukkit
 
 import com.cjcrafter.scheduler.TaskImplementation
 import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitTask
+import org.jetbrains.annotations.ApiStatus
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
-class BukkitTask(
+class BukkitTask<T : Any>(
     override val owningPlugin: Plugin,
     private val isRepeatingTask: Boolean,
-) : TaskImplementation {
+) : TaskImplementation<T> {
 
-    lateinit var scheduledTask: org.bukkit.scheduler.BukkitTask
-    private val future: CompletableFuture<TaskImplementation> = CompletableFuture()
+    private val lock = ReentrantLock()
+    private val scheduledTaskRef = AtomicReference<BukkitTask>()
+    private val future: CompletableFuture<TaskImplementation<T>> = CompletableFuture()
+    private var callback: T? = null
+
+    @ApiStatus.Internal
+    fun setScheduledTask(scheduledTask: BukkitTask) {
+        scheduledTaskRef.set(scheduledTask)
+    }
 
     override fun cancel() {
-        scheduledTask.cancel()
+        scheduledTaskRef.get().cancel()
     }
 
     override fun isCancelled(): Boolean {
-        return scheduledTask.isCancelled
+        return scheduledTaskRef.get().isCancelled
     }
 
     override fun isRunning(): Boolean {
-        return owningPlugin.server.scheduler.isCurrentlyRunning(scheduledTask.taskId)
+        return owningPlugin.server.scheduler.isCurrentlyRunning(scheduledTaskRef.get().taskId)
     }
 
     override fun isRepeatingTask(): Boolean {
         return isRepeatingTask
     }
 
-    override fun asFuture(): CompletableFuture<TaskImplementation> {
+    override fun getCallback(): T? {
+        return lock.withLock { callback }
+    }
+
+    fun setCallback(callback: T?) {
+        lock.withLock { this.callback = callback }
+    }
+
+    override fun asFuture(): CompletableFuture<TaskImplementation<T>> {
         return future
     }
 }
