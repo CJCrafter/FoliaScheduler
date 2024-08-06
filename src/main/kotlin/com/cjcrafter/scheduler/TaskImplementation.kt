@@ -1,6 +1,7 @@
 package com.cjcrafter.scheduler
 
 import org.bukkit.plugin.Plugin
+import org.jetbrains.annotations.ApiStatus
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.function.Function
@@ -38,8 +39,11 @@ interface TaskImplementation<T : Any> {
     fun getCallback(): T?
 
     /**
-     * Returns a CompletableFuture that will be completed when the task has finished executing. For repeating tasks,
-     * the future will be completed 1 time for each execution.
+     * Returns a CompletableFuture that will be completed when the task has finished executing.
+     * For repeating tasks, the future will be completed on the first loop execution.
+     *
+     * The future may not be completed if the task is cancelled before it is run, or if an
+     * exception occurs during execution of the task.
      */
     fun asFuture(): CompletableFuture<TaskImplementation<T>>
 }

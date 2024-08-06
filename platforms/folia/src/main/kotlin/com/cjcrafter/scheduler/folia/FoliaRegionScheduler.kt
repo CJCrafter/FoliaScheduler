@@ -24,9 +24,9 @@ internal class FoliaRegionScheduler(
         function: Function<TaskImplementation<T>, T>,
     ): Consumer<ScheduledTask> {
         return Consumer { scheduledTask ->
-            taskImplementation.scheduledTask = scheduledTask  // updating is probably not necessary
+            taskImplementation.setScheduledTask(scheduledTask)  // updating is probably not necessary
             val callback = function.apply(taskImplementation)
-            taskImplementation.callback = callback
+            taskImplementation.setCallback(callback)
             taskImplementation.asFuture().complete(taskImplementation)
         }
     }
@@ -39,7 +39,7 @@ internal class FoliaRegionScheduler(
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = regionScheduler.run(plugin, world, chunkX, chunkZ, foliaConsumer)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -50,7 +50,7 @@ internal class FoliaRegionScheduler(
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = regionScheduler.runDelayed(plugin, world, chunkX, chunkZ, foliaConsumer, delay)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -62,7 +62,7 @@ internal class FoliaRegionScheduler(
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = regionScheduler.runAtFixedRate(plugin, world, chunkX, chunkZ, foliaConsumer, delay, period)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 }

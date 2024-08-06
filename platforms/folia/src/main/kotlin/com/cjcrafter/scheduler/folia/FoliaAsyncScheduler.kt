@@ -19,9 +19,9 @@ internal class FoliaAsyncScheduler(private val plugin: Plugin) : AsyncSchedulerI
         function: Function<TaskImplementation<T>, T>,
     ): Consumer<ScheduledTask> {
         return Consumer { scheduledTask ->
-            taskImplementation.scheduledTask = scheduledTask  // updating is probably not necessary
+            taskImplementation.setScheduledTask(scheduledTask)  // updating is probably not necessary
             val callback = function.apply(taskImplementation)
-            taskImplementation.callback = callback
+            taskImplementation.setCallback(callback)
             taskImplementation.asFuture().complete(taskImplementation)
         }
     }
@@ -30,7 +30,7 @@ internal class FoliaAsyncScheduler(private val plugin: Plugin) : AsyncSchedulerI
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = asyncScheduler.runNow(plugin, foliaConsumer)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -42,7 +42,7 @@ internal class FoliaAsyncScheduler(private val plugin: Plugin) : AsyncSchedulerI
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = asyncScheduler.runDelayed(plugin, foliaConsumer, delay, unit)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -55,7 +55,7 @@ internal class FoliaAsyncScheduler(private val plugin: Plugin) : AsyncSchedulerI
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = asyncScheduler.runAtFixedRate(plugin, foliaConsumer, delay, period, unit)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 }

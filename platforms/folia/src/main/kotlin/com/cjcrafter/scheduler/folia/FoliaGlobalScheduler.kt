@@ -18,9 +18,9 @@ internal class FoliaGlobalScheduler(private val plugin: Plugin) : SchedulerImple
         function: Function<TaskImplementation<T>, T>,
     ): Consumer<ScheduledTask> {
         return Consumer { scheduledTask ->
-            taskImplementation.scheduledTask = scheduledTask  // updating is probably not necessary
+            taskImplementation.setScheduledTask(scheduledTask)  // updating is probably not necessary
             val callback = function.apply(taskImplementation)
-            taskImplementation.callback = callback
+            taskImplementation.setCallback(callback)
             taskImplementation.asFuture().complete(taskImplementation)
         }
     }
@@ -33,7 +33,7 @@ internal class FoliaGlobalScheduler(private val plugin: Plugin) : SchedulerImple
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = globalRegionScheduler.run(plugin, foliaConsumer)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -44,7 +44,7 @@ internal class FoliaGlobalScheduler(private val plugin: Plugin) : SchedulerImple
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = globalRegionScheduler.runDelayed(plugin, foliaConsumer, delay)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -56,7 +56,7 @@ internal class FoliaGlobalScheduler(private val plugin: Plugin) : SchedulerImple
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = globalRegionScheduler.runAtFixedRate(plugin, foliaConsumer, delay, period)
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 }

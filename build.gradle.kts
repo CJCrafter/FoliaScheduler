@@ -20,6 +20,7 @@ repositories {
 dependencies {
     // 1.12.2 is the oldest version we plan on officially supporting
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
+    compileOnly("org.jetbrains:annotations:24.1.0")
 }
 
 kotlin {

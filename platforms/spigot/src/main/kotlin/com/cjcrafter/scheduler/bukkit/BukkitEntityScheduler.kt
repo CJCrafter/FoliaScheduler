@@ -49,12 +49,12 @@ internal class BukkitEntityScheduler(
                     return
                 }
                 val callback = function.apply(taskImplementation)
-                taskImplementation.callback = callback
+                taskImplementation.setCallback(callback)
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTask(plugin)
 
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -76,12 +76,12 @@ internal class BukkitEntityScheduler(
                     return
                 }
                 val callback = function.apply(taskImplementation)
-                taskImplementation.callback = callback
+                taskImplementation.setCallback(callback)
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskLater(plugin, delay)
 
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -104,12 +104,12 @@ internal class BukkitEntityScheduler(
                     return
                 }
                 val callback = function.apply(taskImplementation)
-                taskImplementation.callback = callback
+                taskImplementation.setCallback(callback)
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskTimer(plugin, delay, period)
 
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 }

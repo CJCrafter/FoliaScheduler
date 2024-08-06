@@ -19,9 +19,9 @@ internal class FoliaEntityScheduler(private val plugin: Plugin, entity: Entity) 
         function: Function<TaskImplementation<T>, T>,
     ): Consumer<ScheduledTask> {
         return Consumer { scheduledTask ->
-            taskImplementation.scheduledTask = scheduledTask  // updating is probably not necessary
+            taskImplementation.setScheduledTask(scheduledTask)  // updating is probably not necessary
             val callback = function.apply(taskImplementation)
-            taskImplementation.callback = callback
+            taskImplementation.setCallback(callback)
             taskImplementation.asFuture().complete(taskImplementation)
         }
     }
@@ -37,7 +37,7 @@ internal class FoliaEntityScheduler(private val plugin: Plugin, entity: Entity) 
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = entityScheduler.run(plugin, foliaConsumer, retired) ?: return null
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -49,7 +49,7 @@ internal class FoliaEntityScheduler(private val plugin: Plugin, entity: Entity) 
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = entityScheduler.runDelayed(plugin, foliaConsumer, retired, delay) ?: return null
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -62,7 +62,7 @@ internal class FoliaEntityScheduler(private val plugin: Plugin, entity: Entity) 
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = entityScheduler.runAtFixedRate(plugin, foliaConsumer, retired, delay, period) ?: return null
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 }

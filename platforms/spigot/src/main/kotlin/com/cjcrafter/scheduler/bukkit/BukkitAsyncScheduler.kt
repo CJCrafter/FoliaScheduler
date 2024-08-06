@@ -16,12 +16,12 @@ internal class BukkitAsyncScheduler(private val plugin: Plugin) : AsyncScheduler
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
                 val callback = function.apply(taskImplementation)
-                taskImplementation.callback = callback
+                taskImplementation.setCallback(callback)
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskAsynchronously(plugin)
 
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -34,12 +34,12 @@ internal class BukkitAsyncScheduler(private val plugin: Plugin) : AsyncScheduler
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
                 val callback = function.apply(taskImplementation)
-                taskImplementation.callback = callback
+                taskImplementation.setCallback(callback)
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskLaterAsynchronously(plugin, unit.toMillis(delay) / 50)
 
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 
@@ -53,12 +53,12 @@ internal class BukkitAsyncScheduler(private val plugin: Plugin) : AsyncScheduler
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
                 val callback = function.apply(taskImplementation)
-                taskImplementation.callback = callback
+                taskImplementation.setCallback(callback)
                 taskImplementation.asFuture().complete(taskImplementation)
             }
         }.runTaskTimerAsynchronously(plugin, unit.toMillis(delay) / 50, unit.toMillis(period) / 50)
 
-        taskImplementation.scheduledTask = scheduledTask
+        taskImplementation.setScheduledTask(scheduledTask)
         return taskImplementation
     }
 }
