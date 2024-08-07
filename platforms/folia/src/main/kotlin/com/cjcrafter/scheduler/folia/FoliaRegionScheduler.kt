@@ -21,7 +21,7 @@ internal class FoliaRegionScheduler(
 
     private fun <T : Any> buildFoliaConsumer(
         taskImplementation: FoliaTask<T>,
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
     ): Consumer<ScheduledTask> {
         return Consumer { scheduledTask ->
             taskImplementation.setScheduledTask(scheduledTask)  // updating is probably not necessary
@@ -35,7 +35,7 @@ internal class FoliaRegionScheduler(
         regionScheduler.execute(plugin, world, chunkX, chunkZ, run)
     }
 
-    override fun <T : Any> run(function: Function<TaskImplementation<T>, T>): TaskImplementation<T> {
+    override fun <T : Any> run(function: Function<TaskImplementation<T>, T?>): TaskImplementation<T> {
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = regionScheduler.run(plugin, world, chunkX, chunkZ, foliaConsumer)
@@ -44,7 +44,7 @@ internal class FoliaRegionScheduler(
     }
 
     override fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
     ): TaskImplementation<T> {
         val taskImplementation = FoliaTask<T>()
@@ -55,7 +55,7 @@ internal class FoliaRegionScheduler(
     }
 
     override fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         period: Long,
     ): TaskImplementation<T> {

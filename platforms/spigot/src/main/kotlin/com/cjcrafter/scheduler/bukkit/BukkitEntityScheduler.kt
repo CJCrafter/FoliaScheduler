@@ -33,7 +33,7 @@ internal class BukkitEntityScheduler(
     }
 
     override fun <T : Any> run(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         retired: Runnable?,
     ): TaskImplementation<T>? {
         if (!entity.isValid) {
@@ -59,7 +59,7 @@ internal class BukkitEntityScheduler(
     }
 
     override fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         retired: Runnable?,
         delay: Long,
     ): TaskImplementation<T>? {
@@ -86,7 +86,7 @@ internal class BukkitEntityScheduler(
     }
 
     override fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         retired: Runnable?,
         delay: Long,
         period: Long

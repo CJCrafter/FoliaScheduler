@@ -18,7 +18,7 @@ internal class BukkitSyncScheduler(private val plugin: Plugin) : SchedulerImplem
         }.runTask(plugin)
     }
 
-    override fun <T : Any> run(function: Function<TaskImplementation<T>, T>): TaskImplementation<T> {
+    override fun <T : Any> run(function: Function<TaskImplementation<T>, T?>): TaskImplementation<T> {
         val taskImplementation = BukkitTask<T>(plugin, false)
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
@@ -33,7 +33,7 @@ internal class BukkitSyncScheduler(private val plugin: Plugin) : SchedulerImplem
     }
 
     override fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
     ): TaskImplementation<T> {
         val taskImplementation = BukkitTask<T>(plugin, false)
@@ -50,7 +50,7 @@ internal class BukkitSyncScheduler(private val plugin: Plugin) : SchedulerImplem
     }
 
     override fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         period: Long,
     ): TaskImplementation<T> {

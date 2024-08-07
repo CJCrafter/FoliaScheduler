@@ -11,7 +11,7 @@ import java.util.function.Function
 
 @ApiStatus.Internal
 internal class BukkitAsyncScheduler(private val plugin: Plugin) : AsyncSchedulerImplementation {
-    override fun <T : Any> runNow(function: Function<TaskImplementation<T>, T>): TaskImplementation<T> {
+    override fun <T : Any> runNow(function: Function<TaskImplementation<T>, T?>): TaskImplementation<T> {
         val taskImplementation = BukkitTask<T>(plugin, false)
         val scheduledTask = object : BukkitRunnable() {
             override fun run() {
@@ -26,7 +26,7 @@ internal class BukkitAsyncScheduler(private val plugin: Plugin) : AsyncScheduler
     }
 
     override fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         unit: TimeUnit,
     ): TaskImplementation<T> {
@@ -44,7 +44,7 @@ internal class BukkitAsyncScheduler(private val plugin: Plugin) : AsyncScheduler
     }
 
     override fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         period: Long,
         unit: TimeUnit

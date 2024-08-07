@@ -15,7 +15,7 @@ internal class FoliaGlobalScheduler(private val plugin: Plugin) : SchedulerImple
 
     private fun <T : Any> buildFoliaConsumer(
         taskImplementation: FoliaTask<T>,
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
     ): Consumer<ScheduledTask> {
         return Consumer { scheduledTask ->
             taskImplementation.setScheduledTask(scheduledTask)  // updating is probably not necessary
@@ -29,7 +29,7 @@ internal class FoliaGlobalScheduler(private val plugin: Plugin) : SchedulerImple
         globalRegionScheduler.execute(plugin, run)
     }
 
-    override fun <T : Any> run(function: Function<TaskImplementation<T>, T>): TaskImplementation<T> {
+    override fun <T : Any> run(function: Function<TaskImplementation<T>, T?>): TaskImplementation<T> {
         val taskImplementation = FoliaTask<T>()
         val foliaConsumer = buildFoliaConsumer(taskImplementation, function)
         val scheduledTask = globalRegionScheduler.run(plugin, foliaConsumer)
@@ -38,7 +38,7 @@ internal class FoliaGlobalScheduler(private val plugin: Plugin) : SchedulerImple
     }
 
     override fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
     ): TaskImplementation<T> {
         val taskImplementation = FoliaTask<T>()
@@ -49,7 +49,7 @@ internal class FoliaGlobalScheduler(private val plugin: Plugin) : SchedulerImple
     }
 
     override fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         period: Long,
     ): TaskImplementation<T> {

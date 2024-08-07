@@ -16,7 +16,7 @@ internal class FoliaEntityScheduler(private val plugin: Plugin, entity: Entity) 
 
     private fun <T : Any> buildFoliaConsumer(
         taskImplementation: FoliaTask<T>,
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
     ): Consumer<ScheduledTask> {
         return Consumer { scheduledTask ->
             taskImplementation.setScheduledTask(scheduledTask)  // updating is probably not necessary
@@ -31,7 +31,7 @@ internal class FoliaEntityScheduler(private val plugin: Plugin, entity: Entity) 
     }
 
     override fun <T : Any> run(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         retired: Runnable?,
     ): TaskImplementation<T>? {
         val taskImplementation = FoliaTask<T>()
@@ -42,7 +42,7 @@ internal class FoliaEntityScheduler(private val plugin: Plugin, entity: Entity) 
     }
 
     override fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         retired: Runnable?,
         delay: Long,
     ): TaskImplementation<T>? {
@@ -54,7 +54,7 @@ internal class FoliaEntityScheduler(private val plugin: Plugin, entity: Entity) 
     }
 
     override fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         retired: Runnable?,
         delay: Long,
         period: Long

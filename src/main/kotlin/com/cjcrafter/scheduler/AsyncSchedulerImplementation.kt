@@ -12,13 +12,13 @@ interface AsyncSchedulerImplementation {
     /**
      * Runs a task asynchronously immediately.
      */
-    fun <T : Any> runNow(function: Function<TaskImplementation<T>, T>): TaskImplementation<T>
+    fun <T : Any> runNow(function: Function<TaskImplementation<T>, T?>): TaskImplementation<T>
 
     /**
      * Runs a task asynchronously immediately.
      */
     fun <T : Any> runNow(consumer: Consumer<TaskImplementation<Void>>): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -29,7 +29,7 @@ interface AsyncSchedulerImplementation {
      * Runs a task asynchronously immediately.
      */
     fun runNow(runnable: Runnable): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
@@ -37,7 +37,7 @@ interface AsyncSchedulerImplementation {
     }
 
     fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         unit: TimeUnit,
     ): TaskImplementation<T>
@@ -55,7 +55,7 @@ interface AsyncSchedulerImplementation {
         delay: Long,
         unit: TimeUnit,
     ): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -75,7 +75,7 @@ interface AsyncSchedulerImplementation {
         delay: Long,
         unit: TimeUnit,
     ): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
@@ -90,7 +90,7 @@ interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         ticks: Long,
     ): TaskImplementation<T> {
         // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay to milliseconds
@@ -137,7 +137,7 @@ interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         period: Long,
         unit: TimeUnit,
@@ -158,7 +158,7 @@ interface AsyncSchedulerImplementation {
         period: Long,
         unit: TimeUnit,
     ): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -180,7 +180,7 @@ interface AsyncSchedulerImplementation {
         period: Long,
         unit: TimeUnit,
     ): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
@@ -196,7 +196,7 @@ interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         ticks: Long,
     ): TaskImplementation<T> {

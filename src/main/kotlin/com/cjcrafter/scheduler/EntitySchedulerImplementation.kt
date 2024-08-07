@@ -37,7 +37,7 @@ interface EntitySchedulerImplementation {
      * @param retired The task to run if the entity is retired.
      * @return The task that was scheduled.
      */
-    fun <T : Any> run(function: Function<TaskImplementation<T>, T>, retired: Runnable?): TaskImplementation<T>?
+    fun <T : Any> run(function: Function<TaskImplementation<T>, T?>, retired: Runnable?): TaskImplementation<T>?
 
     /**
      * Schedules a task to be run on the next tick.
@@ -46,7 +46,7 @@ interface EntitySchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun run(consumer: Consumer<TaskImplementation<Void>>, retired: Runnable?): TaskImplementation<Void>? {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -60,7 +60,7 @@ interface EntitySchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun run(runnable: Runnable, retired: Runnable?): TaskImplementation<Void>? {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
@@ -73,7 +73,7 @@ interface EntitySchedulerImplementation {
      * @param function The task to run.
      * @return The task that was scheduled.
      */
-    fun <T : Any> run(function: Function<TaskImplementation<T>, T>): TaskImplementation<T>? {
+    fun <T : Any> run(function: Function<TaskImplementation<T>, T?>): TaskImplementation<T>? {
         return run(function, null)
     }
 
@@ -106,7 +106,7 @@ interface EntitySchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         retired: Runnable?,
         delay: Long,
     ): TaskImplementation<T>?
@@ -124,7 +124,7 @@ interface EntitySchedulerImplementation {
         retired: Runnable?,
         delay: Long,
     ): TaskImplementation<Void>? {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -144,7 +144,7 @@ interface EntitySchedulerImplementation {
         retired: Runnable?,
         delay: Long,
     ): TaskImplementation<Void>? {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
@@ -159,7 +159,7 @@ interface EntitySchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
     ): TaskImplementation<T>? {
         return runDelayed(function, null, delay)
@@ -203,7 +203,7 @@ interface EntitySchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         retired: Runnable?,
         delay: Long,
         period: Long,
@@ -224,7 +224,7 @@ interface EntitySchedulerImplementation {
         delay: Long,
         period: Long,
     ): TaskImplementation<Void>? {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -246,7 +246,7 @@ interface EntitySchedulerImplementation {
         delay: Long,
         period: Long,
     ): TaskImplementation<Void>? {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
@@ -262,7 +262,7 @@ interface EntitySchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         period: Long,
     ): TaskImplementation<T>? {

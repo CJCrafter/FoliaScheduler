@@ -20,7 +20,7 @@ interface SchedulerImplementation {
      * @param function The task to run.
      * @return The task that was scheduled.
      */
-    fun <T : Any> run(function: Function<TaskImplementation<T>, T>): TaskImplementation<T>
+    fun <T : Any> run(function: Function<TaskImplementation<T>, T?>): TaskImplementation<T>
 
     /**
      * Schedules a task to be run after a delay.
@@ -29,7 +29,7 @@ interface SchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun run(consumer: Consumer<TaskImplementation<Void>>): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -43,7 +43,7 @@ interface SchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun run(runnable: Runnable): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
@@ -58,7 +58,7 @@ interface SchedulerImplementation {
      * @return The task that was scheduled.
      */
     fun <T : Any> runDelayed(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
     ): TaskImplementation<T>
 
@@ -73,7 +73,7 @@ interface SchedulerImplementation {
         consumer: Consumer<TaskImplementation<Void>>,
         delay: Long,
     ): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -92,7 +92,7 @@ interface SchedulerImplementation {
         runnable: Runnable,
         delay: Long,
     ): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
@@ -107,7 +107,7 @@ interface SchedulerImplementation {
      * @param period The time unit of the delay.
      */
     fun <T : Any> runAtFixedRate(
-        function: Function<TaskImplementation<T>, T>,
+        function: Function<TaskImplementation<T>, T?>,
         delay: Long,
         period: Long,
     ): TaskImplementation<T>
@@ -124,7 +124,7 @@ interface SchedulerImplementation {
         delay: Long,
         period: Long,
     ): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             consumer.accept(task)
             null
         }
@@ -143,7 +143,7 @@ interface SchedulerImplementation {
         delay: Long,
         period: Long,
     ): TaskImplementation<Void> {
-        val wrapperFunction = Function<TaskImplementation<Void>, Void> { task ->
+        val wrapperFunction = Function<TaskImplementation<Void>, Void?> { task ->
             runnable.run()
             null
         }
