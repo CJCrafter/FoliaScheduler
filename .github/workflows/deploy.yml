@@ -3,11 +3,14 @@ name: Deploy
 on:
   push:
     branches: [ master ]
+  pull_request:
+    types: [closed]
 
 jobs:
   deploy:
     permissions:
       contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -47,16 +50,16 @@ jobs:
         run: ./gradlew build
 
       - name: Create and switch to new branch
-        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true' && github.event_name == 'push'
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git checkout -b release-${{ steps.version_check.outputs.NEW_VERSION }}
           git add build.gradle.kts
           git commit -m "Bump version to ${{ steps.version_check.outputs.NEW_VERSION }}"
 
       - name: Update README version
-        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true' && github.event_name == 'push'
         run: |
           sed -i "s/<version>.*<\/version>/<version>${{ steps.version_check.outputs.NEW_VERSION }}<\/version>/g" README.md
           sed -i "s/implementation(\"com.cjcrafter:foliascheduler:.*\")/implementation(\"com.cjcrafter:foliascheduler:${{ steps.version_check.outputs.NEW_VERSION }}\")/g" README.md
@@ -64,14 +67,14 @@ jobs:
           git commit -m "Update README version to ${{ steps.version_check.outputs.NEW_VERSION }}"
 
       - name: Push changes
-        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true' && github.event_name == 'push'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: release-${{ steps.version_check.outputs.NEW_VERSION }}
 
       - name: Create Pull Request
-        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true' && github.event_name == 'push'
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -85,16 +88,17 @@ jobs:
           base: master
 
       - name: Publish to Maven Central
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew publishToSonatype closeAndReleaseRepository
+        run: ./gradlew publish
 
       - name: Create GitHub Release
-        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -104,4 +108,4 @@ jobs:
           body: |
             Automated release ${{ steps.version_check.outputs.NEW_VERSION }}
           draft: false
-          prerelease: true
+          prerelease: false
