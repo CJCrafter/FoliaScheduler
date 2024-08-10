@@ -8,6 +8,7 @@ FoliaScheduler is a fully-featured task scheduler for plugins seeking Spigot/Pap
 you can now schedule tasks on entities, regions, asynchronously, and more!
 
 ## Features
+* Java 1.8+ (but you will need a JDK of 17+ to shade the Folia compatibility classes!)
 * Folia 1.20+
 * Spigot 1.12.2+ (and *likely* any older version)
 * Paper 1.12.2+ (and *likely* any older version)
@@ -16,14 +17,14 @@ you can now schedule tasks on entities, regions, asynchronously, and more!
 
 ## How it works
 We simply try to use Folia's scheduler (included in paper server jars) if it's available. If not, we fallback to
-Spigot's scheduler (using `BukkitRunnable`, which allows basically any server version to use). We expect java 8+.
+Spigot's scheduler (using `BukkitRunnable`, which allows basically any server version to use).
 
 ## Maven
 ```xml
 <dependency>
     <groupId>com.cjcrafter</groupId>
     <artifactId>foliascheduler</artifactId>
-    <version>0.1.0</version>
+    <version>0.3.3</version>
 </dependency>
 ```
 
@@ -34,9 +35,31 @@ repositories {
 }
 
 dependencies {
-    implementation("com.cjcrafter:foliascheduler:0.1.0")
+    implementation("com.cjcrafter:foliascheduler:0.3.3")
 }
 ```
+
+## How do I convert my whole plugin to Folia?
+Pretty much any plugin is already "compatible" with Folia. Usually, the only change you need to worry about
+is the scheduler. Any usage of 
+[`BukkitRunnable`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/scheduler/BukkitRunnable.html) and 
+[`Bukkit#getScheduler`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Bukkit.html#getScheduler()) will
+need to be replaced.
+
+You'll also need to add `folia-supported: true` to your plugin.yml. 
+
+Here are some PRs that show how to convert a plugin to Folia:
+* [WeaponMechanics](https://github.com/WeaponMechanics/MechanicsMain/pull/433/)
+* (Do you have a PR that shows how to convert a plugin to Folia using this lib? Let me know, or just make a PR to add it here!)
+
+#### Thread safety tips
+* Before modifying any block/entity, you can check if your thread is correct by using:
+  * `ServerImplementation#isOwnedByCurrentRegion(Entity)`
+  * `ServerImplementation#isOwnedByCurrentRegion(Block)`
+* Typically, you should not use `ServerImplementation#async()` unless you are doing I/O operations or heavy calculations.
+  * When you use async, you should probably use a callback... See examples below...
+* It's generally safe to send packets to players on any thread, since it doesn't modify the state of anything. 
+
 
 ## Examples
 #### Modify an entity on the next tick

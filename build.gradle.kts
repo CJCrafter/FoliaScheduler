@@ -27,7 +27,6 @@ kotlin {
     jvmToolchain(8)
 }
 
-
 java {
     withSourcesJar()
     withJavadocJar()
@@ -37,12 +36,6 @@ tasks {
     jar {
         // Include all compiled classes from subprojects
         from(subprojects.map { it.sourceSets["main"].output })
-    }
-
-    javadoc {
-        if (JavaVersion.current().isJava9Compatible) {
-            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
-        }
     }
 
     // Update sources JAR to include subproject sources
@@ -65,7 +58,7 @@ signing {
     useInMemoryPgpKeys(
         findProperty("SIGNING_KEY_ID").toString(),
         findProperty("SIGNING_PRIVATE_KEY").toString(),
-        findProperty("SIGNING_PASSWORD").toString()
+        findProperty("SIGNING_PASSWORD").toString(),
     )
     sign(publishing.publications)
 }
@@ -82,7 +75,6 @@ publishing {
 
                 groupId = group.toString()
                 artifactId = githubRepo.lowercase()
-                print(artifactId)
 
                 licenses {
                     license {
