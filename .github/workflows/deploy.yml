@@ -1,0 +1,105 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Check if version update is needed
+        id: version_check
+        run: |
+          CURRENT_VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+          if [[ $CURRENT_VERSION == *"-SNAPSHOT" ]]; then
+            echo "Version is already a SNAPSHOT, no update needed"
+            echo "UPDATE_NEEDED=false" >> $GITHUB_OUTPUT
+            echo "NEW_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          else
+            NEW_VERSION="${CURRENT_VERSION%.*}.$((${CURRENT_VERSION##*.} + 1))-SNAPSHOT"
+            echo "Updating version to $NEW_VERSION"
+            echo "UPDATE_NEEDED=true" >> $GITHUB_OUTPUT
+            echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update version if needed
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        run: |
+          sed -i "s/version = \".*\"/version = \"${{ steps.version_check.outputs.NEW_VERSION }}\"/g" build.gradle.kts
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Create and switch to new branch
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b release-${{ steps.version_check.outputs.NEW_VERSION }}
+          git add build.gradle.kts
+          git commit -m "Bump version to ${{ steps.version_check.outputs.NEW_VERSION }}"
+
+      - name: Update README version
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        run: |
+          sed -i "s/<version>.*<\/version>/<version>${{ steps.version_check.outputs.NEW_VERSION }}<\/version>/g" README.md
+          sed -i "s/implementation(\"com.cjcrafter:foliascheduler:.*\")/implementation(\"com.cjcrafter:foliascheduler:${{ steps.version_check.outputs.NEW_VERSION }}\")/g" README.md
+          git add README.md
+          git commit -m "Update README version to ${{ steps.version_check.outputs.NEW_VERSION }}"
+
+      - name: Push changes
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: release-${{ steps.version_check.outputs.NEW_VERSION }}
+
+      - name: Create Pull Request
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Bump version to ${{ steps.version_check.outputs.NEW_VERSION }}
+          title: Release ${{ steps.version_check.outputs.NEW_VERSION }}
+          body: |
+            Automated release PR:
+            - Version bumped to ${{ steps.version_check.outputs.NEW_VERSION }}
+            - README updated
+          branch: release-${{ steps.version_check.outputs.NEW_VERSION }}
+          base: master
+
+      - name: Publish to Maven Central
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publish
+
+      - name: Create GitHub Release
+        if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version_check.outputs.NEW_VERSION }}
+          release_name: Release ${{ steps.version_check.outputs.NEW_VERSION }}
+          body: |
+            Automated release ${{ steps.version_check.outputs.NEW_VERSION }}
+          draft: false
+          prerelease: true
