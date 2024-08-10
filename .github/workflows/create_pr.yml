@@ -3,6 +3,7 @@ name: Create Publish PR
 on:
   push:
     branches: [ main ]
+  workflow_dispatch: # trigger manually
 
 permissions:
   contents: write
