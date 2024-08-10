@@ -89,7 +89,7 @@ jobs:
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew publish
+        run: ./gradlew publishToSonatype closeAndReleaseRepository
 
       - name: Create GitHub Release
         if: steps.version_check.outputs.UPDATE_NEEDED == 'true'
