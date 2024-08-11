@@ -49,8 +49,8 @@ nexusPublishing {
         sonatype {
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username.set(findProperty("OSSRH_USERNAME").toString())
-            password.set(findProperty("OSSRH_PASSWORD").toString())
+            username.set(System.getenv("OSSRH_USERNAME") ?: findProperty("OSSRH_USERNAME").toString())
+            password.set(System.getenv("OSSRH_PASSWORD") ?: findProperty("OSSRH_PASSWORD").toString())
         }
     }
 }
@@ -58,9 +58,9 @@ nexusPublishing {
 signing {
     isRequired = true
     useInMemoryPgpKeys(
-        findProperty("SIGNING_KEY_ID").toString(),
-        findProperty("SIGNING_PRIVATE_KEY").toString(),
-        findProperty("SIGNING_PASSWORD").toString(),
+        System.getenv("SIGNING_KEY_ID") ?: findProperty("SIGNING_KEY_ID").toString(),
+        System.getenv("SIGNING_PRIVATE_KEY") ?: findProperty("SIGNING_PRIVATE_KEY").toString(),
+        System.getenv("SIGNING_PASSWORD") ?: findProperty("SIGNING_PASSWORD").toString(),
     )
     sign(publishing.publications)
 }
