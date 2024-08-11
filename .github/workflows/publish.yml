@@ -1,9 +1,10 @@
 name: Publish Release
 
-on:
-  pull_request:
-    types: [closed]
-  workflow_dispatch: # trigger manually
+#on:
+#  pull_request:
+#    types: [closed]
+#  workflow_dispatch: # trigger manually
+on: pull_request
 
 permissions:
   contents: write
