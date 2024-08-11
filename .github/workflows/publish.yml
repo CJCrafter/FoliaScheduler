@@ -36,8 +36,6 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           OSSRH_ID: ${{ secrets.OSSRH_ID }}
-          sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
-          sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
