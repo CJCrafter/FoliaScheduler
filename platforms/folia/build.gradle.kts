@@ -18,3 +18,10 @@ java {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
+
+tasks.javadoc {
+    options {
+        // suppress warnings for missing Javadoc comments
+        (this as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
+    }
+}

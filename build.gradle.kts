@@ -1,13 +1,8 @@
-import com.github.jengelman.gradle.plugins.shadow.transformers.Transformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContext
-import org.apache.tools.zip.ZipOutputStream
-
 plugins {
     `java-library`
     `maven-publish`
     signing
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.cjcrafter"
@@ -27,8 +22,6 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.1.0")
 }
 
-
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(8))
@@ -37,60 +30,47 @@ java {
     withJavadocJar()
 }
 
-class KotlinMinimizer : Transformer {
-    override fun getName(): String {
-        return "KotlinMinimizer"
-    }
-
-    override fun canTransformResource(element: FileTreeElement?): Boolean {
-        // Only transform stuff from the kotlin package
-        return element?.name?.startsWith("kotlin") ?: false
-    }
-
-    override fun transform(context: TransformerContext?) {
-        // Exclude everything from the kotlin package
-    }
-
-    override fun hasTransformedResource(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun modifyOutputStream(os: ZipOutputStream?, preserveFileTimestamps: Boolean) {
-    }
-
-}
-
 tasks {
-    shadowJar {
-        archiveClassifier.set("")
-
-        subprojects.forEach { subproject ->
-            from(subproject.sourceSets.main.get().output)
-            configurations += subproject.configurations.runtimeClasspath.get()
-        }
-
-        minimize()
-
-
-        // exclude everything else from the kotlin package
-        relocate("kotlin.jvm.internal", "com.cjcrafter.scheduler.kotlin.jvm.internal") {
-            // stdlib
-            include("kotlin.jvm.internal.**")
-        }
-    }
-
     jar {
-        // Include all compiled classes from subprojects
-        enabled = false
+        manifest {
+            attributes(
+                "Multi-Release" to "true"
+            )
+        }
+        from(sourceSets.main.get().output)
+        dependsOn(":folia:jar", ":spigot:jar")
+        from(zipTree(project(":spigot").tasks.jar.get().archiveFile)) {
+            exclude("META-INF/**")
+        }
+        from(zipTree(project(":folia").tasks.jar.get().archiveFile)) {
+            into("META-INF/versions/17")
+        }
     }
 
-    build {
-        dependsOn(shadowJar)
+    javadoc {
+        options {
+            this as StandardJavadocDocletOptions
+            // suppress warnings for missing Javadoc comments
+            addStringOption("Xdoclint:none", "-quiet")
+            addStringOption("encoding", "UTF-8")
+        }
+        source(sourceSets.main.get().allJava)
+        classpath = sourceSets.main.get().compileClasspath
+        exclude("META-INF/versions/**")
     }
 
     // Update sources JAR to include subproject sources
     named<Jar>("sourcesJar") {
-        from(subprojects.map { it.sourceSets["main"].allSource })
+        from(sourceSets.main.get().allSource)
+        from(project(":spigot").sourceSets.main.get().allSource)
+        from(project(":folia").sourceSets.main.get().allSource) {
+            into("META-INF/versions/17")
+        }
+    }
+
+    // Update Javadoc JAR to include subproject Javadoc
+    named<Jar>("javadocJar") {
+        from(javadoc)
     }
 }
 
