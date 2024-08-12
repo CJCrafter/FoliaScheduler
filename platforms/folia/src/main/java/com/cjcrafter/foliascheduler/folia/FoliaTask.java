@@ -1,6 +1,6 @@
-package com.cjcrafter.scheduler.folia;
+package com.cjcrafter.foliascheduler.folia;
 
-import com.cjcrafter.scheduler.TaskImplementation;
+import com.cjcrafter.foliascheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;

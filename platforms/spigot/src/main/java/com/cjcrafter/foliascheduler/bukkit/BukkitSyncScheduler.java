@@ -1,26 +1,21 @@
-package com.cjcrafter.scheduler.bukkit;
+package com.cjcrafter.foliascheduler.bukkit;
 
-import com.cjcrafter.scheduler.EntitySchedulerImplementation;
-import com.cjcrafter.scheduler.TaskImplementation;
-import org.bukkit.entity.Entity;
+import com.cjcrafter.foliascheduler.SchedulerImplementation;
+import com.cjcrafter.foliascheduler.TaskImplementation;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
 @ApiStatus.Internal
-public class BukkitEntityScheduler implements EntitySchedulerImplementation {
+public class BukkitSyncScheduler implements SchedulerImplementation {
 
     private final @NotNull Plugin plugin;
-    private final @NotNull Entity entity;
 
-    @ApiStatus.Internal
-    public BukkitEntityScheduler(@NotNull Plugin plugin, @NotNull Entity entity) {
+    public BukkitSyncScheduler(@NotNull Plugin plugin) {
         this.plugin = plugin;
-        this.entity = entity;
     }
 
     private <T> @NotNull BukkitRunnable buildBukkitRunnable(
@@ -36,36 +31,19 @@ public class BukkitEntityScheduler implements EntitySchedulerImplementation {
         };
     }
 
-    private boolean isRetired(@Nullable Runnable retired) {
-        if (!entity.isValid()) {
-            if (retired != null)
-                retired.run();
-            return true;
-        }
-        return false;
-    }
 
     @Override
-    public boolean execute(@NotNull Runnable run, @Nullable Runnable retired, long delay) {
-        if (isRetired(retired))
-            return false;
-
+    public void execute(@NotNull Runnable run) {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (isRetired(retired))
-                    return;
                 run.run();
             }
-        }.runTaskLater(plugin, delay);
-        return true;
+        }.runTask(plugin);
     }
 
     @Override
-    public @Nullable <T> TaskImplementation<T> run(@NotNull Function<TaskImplementation<T>, T> function, @Nullable Runnable retired) {
-        if (isRetired(retired))
-            return null;
-
+    public @NotNull <T> TaskImplementation<T> run(@NotNull Function<TaskImplementation<T>, T> function) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, false);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
         taskImplementation.setScheduledTask(runnable.runTask(plugin));
@@ -73,10 +51,7 @@ public class BukkitEntityScheduler implements EntitySchedulerImplementation {
     }
 
     @Override
-    public @Nullable <T> TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, @Nullable Runnable retired, long delay) {
-        if (isRetired(retired))
-            return null;
-
+    public @NotNull <T> TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, long delay) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, false);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
         taskImplementation.setScheduledTask(runnable.runTaskLater(plugin, delay));
@@ -84,10 +59,7 @@ public class BukkitEntityScheduler implements EntitySchedulerImplementation {
     }
 
     @Override
-    public @Nullable <T> TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, @Nullable Runnable retired, long delay, long period) {
-        if (isRetired(retired))
-            return null;
-
+    public @NotNull <T> TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, long delay, long period) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, true);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
         taskImplementation.setScheduledTask(runnable.runTaskTimer(plugin, delay, period));

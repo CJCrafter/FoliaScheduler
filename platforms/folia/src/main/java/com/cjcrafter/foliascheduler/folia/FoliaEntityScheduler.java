@@ -1,7 +1,7 @@
-package com.cjcrafter.scheduler.folia;
+package com.cjcrafter.foliascheduler.folia;
 
-import com.cjcrafter.scheduler.EntitySchedulerImplementation;
-import com.cjcrafter.scheduler.TaskImplementation;
+import com.cjcrafter.foliascheduler.EntitySchedulerImplementation;
+import com.cjcrafter.foliascheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.entity.Entity;

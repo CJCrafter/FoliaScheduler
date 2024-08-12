@@ -1,7 +1,7 @@
-package com.cjcrafter.scheduler.folia;
+package com.cjcrafter.foliascheduler.folia;
 
-import com.cjcrafter.scheduler.SchedulerImplementation;
-import com.cjcrafter.scheduler.TaskImplementation;
+import com.cjcrafter.foliascheduler.SchedulerImplementation;
+import com.cjcrafter.foliascheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.World;
