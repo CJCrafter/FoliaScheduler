@@ -1,7 +1,6 @@
-package com.cjcrafter.scheduler;
+package com.cjcrafter.foliascheduler;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

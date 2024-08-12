@@ -1,9 +1,9 @@
-package com.cjcrafter.scheduler.bukkit;
+package com.cjcrafter.foliascheduler.bukkit;
 
-import com.cjcrafter.scheduler.AsyncSchedulerImplementation;
-import com.cjcrafter.scheduler.EntitySchedulerImplementation;
-import com.cjcrafter.scheduler.SchedulerImplementation;
-import com.cjcrafter.scheduler.ServerImplementation;
+import com.cjcrafter.foliascheduler.AsyncSchedulerImplementation;
+import com.cjcrafter.foliascheduler.EntitySchedulerImplementation;
+import com.cjcrafter.foliascheduler.SchedulerImplementation;
+import com.cjcrafter.foliascheduler.ServerImplementation;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;

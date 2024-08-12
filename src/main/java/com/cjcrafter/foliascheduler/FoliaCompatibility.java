@@ -1,4 +1,4 @@
-package com.cjcrafter.scheduler;
+package com.cjcrafter.foliascheduler;
 
 import org.bukkit.Location;
 import org.bukkit.Server;

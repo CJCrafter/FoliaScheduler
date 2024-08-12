@@ -1,6 +1,6 @@
-package com.cjcrafter.scheduler.bukkit;
+package com.cjcrafter.foliascheduler.bukkit;
 
-import com.cjcrafter.scheduler.TaskImplementation;
+import com.cjcrafter.foliascheduler.TaskImplementation;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;

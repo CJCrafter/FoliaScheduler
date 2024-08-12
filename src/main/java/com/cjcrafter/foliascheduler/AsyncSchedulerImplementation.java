@@ -1,4 +1,4 @@
-package com.cjcrafter.scheduler;
+package com.cjcrafter.foliascheduler;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
