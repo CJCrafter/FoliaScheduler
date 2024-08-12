@@ -24,7 +24,7 @@ Spigot's scheduler (using `BukkitRunnable`, which allows basically any server ve
 <dependency>
     <groupId>com.cjcrafter</groupId>
     <artifactId>foliascheduler</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
 </dependency>
 ```
 
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.cjcrafter:foliascheduler:0.4.0")
+    implementation("com.cjcrafter:foliascheduler:0.4.1")
 }
 ```
 
