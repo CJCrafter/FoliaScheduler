@@ -1,5 +1,4 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
     `java-library`
 }
 
@@ -15,6 +14,8 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.1.0")
 }
 
-kotlin {
-    jvmToolchain(8)
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }

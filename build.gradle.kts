@@ -3,7 +3,6 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContex
 import org.apache.tools.zip.ZipOutputStream
 
 plugins {
-    kotlin("jvm") version "1.9.23"
     `java-library`
     `maven-publish`
     signing
@@ -28,11 +27,12 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.1.0")
 }
 
-kotlin {
-    jvmToolchain(8)
-}
+
 
 java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
     withSourcesJar()
     withJavadocJar()
 }
