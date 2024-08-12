@@ -180,6 +180,7 @@ public class MinecraftVersions {
      */
     public static final @NotNull Update TRICKY_TRIALS = new Update(1, 21, update -> {
         update.version(0, 1); // 1.21
+        update.version(1, 1); // 1.21.1
     });
 
     /**
