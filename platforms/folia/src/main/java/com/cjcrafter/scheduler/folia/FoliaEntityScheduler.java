@@ -1,4 +1,4 @@
-package com.scheduler.folia;
+package com.cjcrafter.scheduler.folia;
 
 import com.cjcrafter.scheduler.EntitySchedulerImplementation;
 import com.cjcrafter.scheduler.TaskImplementation;

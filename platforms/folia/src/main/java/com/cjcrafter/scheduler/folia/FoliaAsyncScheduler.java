@@ -1,31 +1,28 @@
-package com.scheduler.folia;
+package com.cjcrafter.scheduler.folia;
 
-import com.cjcrafter.scheduler.SchedulerImplementation;
+
+import com.cjcrafter.scheduler.AsyncSchedulerImplementation;
 import com.cjcrafter.scheduler.TaskImplementation;
-import com.cjcrafter.scheduler.folia.FoliaTask;
-import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class FoliaRegionScheduler implements SchedulerImplementation {
+@ApiStatus.Internal
+public class FoliaAsyncScheduler implements AsyncSchedulerImplementation {
 
     private final @NotNull Plugin plugin;
-    private final @NotNull RegionScheduler regionScheduler;
-    private final @NotNull World world;
-    private final int chunkX;
-    private final int chunkZ;
+    private final @NotNull AsyncScheduler asyncScheduler;
 
-    public FoliaRegionScheduler(@NotNull Plugin plugin, @NotNull World world, int chunkX, int chunkZ) {
+    @ApiStatus.Internal
+    public FoliaAsyncScheduler(@NotNull Plugin plugin) {
         this.plugin = plugin;
-        this.regionScheduler = plugin.getServer().getRegionScheduler();
-        this.world = world;
-        this.chunkX = chunkX;
-        this.chunkZ = chunkZ;
+        this.asyncScheduler = plugin.getServer().getAsyncScheduler();
     }
 
     private <T> @NotNull Consumer<ScheduledTask> buildFoliaConsumer(
@@ -39,33 +36,29 @@ public class FoliaRegionScheduler implements SchedulerImplementation {
         };
     }
 
-    public void execute(@NotNull Runnable run) {
-        regionScheduler.execute(plugin, world, chunkX, chunkZ, run);
-    }
-
     @Override
-    public @NotNull <T> TaskImplementation<T> run(@NotNull Function<TaskImplementation<T>, T> function) {
+    public <T> @NotNull TaskImplementation<T> runNow(@NotNull Function<TaskImplementation<T>, T> function) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
-        ScheduledTask scheduledTask = regionScheduler.run(plugin, world, chunkX, chunkZ, foliaConsumer);
+        ScheduledTask scheduledTask = asyncScheduler.runNow(plugin, foliaConsumer);
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
     }
 
     @Override
-    public @NotNull <T> TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, long delay) {
+    public <T> @NotNull TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, long delay, @NotNull TimeUnit unit) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
-        ScheduledTask scheduledTask = regionScheduler.runDelayed(plugin, world, chunkX, chunkZ, foliaConsumer, delay);
+        ScheduledTask scheduledTask = asyncScheduler.runDelayed(plugin, foliaConsumer, delay, unit);
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
     }
 
     @Override
-    public @NotNull <T> TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, long delay, long period) {
+    public <T> @NotNull TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, long delay, long period, @NotNull TimeUnit unit) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
-        ScheduledTask scheduledTask = regionScheduler.runAtFixedRate(plugin, world, chunkX, chunkZ, foliaConsumer, delay, period);
+        ScheduledTask scheduledTask = asyncScheduler.runAtFixedRate(plugin, foliaConsumer, delay, period, unit);
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
     }

@@ -1,26 +1,30 @@
-package com.scheduler.folia;
+package com.cjcrafter.scheduler.folia;
 
 import com.cjcrafter.scheduler.SchedulerImplementation;
 import com.cjcrafter.scheduler.TaskImplementation;
-import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
+import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@ApiStatus.Internal
-public class FoliaGlobalScheduler implements SchedulerImplementation {
+public class FoliaRegionScheduler implements SchedulerImplementation {
 
     private final @NotNull Plugin plugin;
-    private final @NotNull GlobalRegionScheduler globalRegionScheduler;
+    private final @NotNull RegionScheduler regionScheduler;
+    private final @NotNull World world;
+    private final int chunkX;
+    private final int chunkZ;
 
-    @ApiStatus.Internal
-    public FoliaGlobalScheduler(@NotNull Plugin plugin) {
+    public FoliaRegionScheduler(@NotNull Plugin plugin, @NotNull World world, int chunkX, int chunkZ) {
         this.plugin = plugin;
-        this.globalRegionScheduler = plugin.getServer().getGlobalRegionScheduler();
+        this.regionScheduler = plugin.getServer().getRegionScheduler();
+        this.world = world;
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
     }
 
     private <T> @NotNull Consumer<ScheduledTask> buildFoliaConsumer(
@@ -34,16 +38,15 @@ public class FoliaGlobalScheduler implements SchedulerImplementation {
         };
     }
 
-    @Override
     public void execute(@NotNull Runnable run) {
-        globalRegionScheduler.execute(plugin, run);
+        regionScheduler.execute(plugin, world, chunkX, chunkZ, run);
     }
 
     @Override
     public @NotNull <T> TaskImplementation<T> run(@NotNull Function<TaskImplementation<T>, T> function) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
-        ScheduledTask scheduledTask = globalRegionScheduler.run(plugin, foliaConsumer);
+        ScheduledTask scheduledTask = regionScheduler.run(plugin, world, chunkX, chunkZ, foliaConsumer);
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
     }
@@ -52,7 +55,7 @@ public class FoliaGlobalScheduler implements SchedulerImplementation {
     public @NotNull <T> TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, long delay) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
-        ScheduledTask scheduledTask = globalRegionScheduler.runDelayed(plugin, foliaConsumer, delay);
+        ScheduledTask scheduledTask = regionScheduler.runDelayed(plugin, world, chunkX, chunkZ, foliaConsumer, delay);
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
     }
@@ -61,7 +64,7 @@ public class FoliaGlobalScheduler implements SchedulerImplementation {
     public @NotNull <T> TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, long delay, long period) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
-        ScheduledTask scheduledTask = globalRegionScheduler.runAtFixedRate(plugin, foliaConsumer, delay, period);
+        ScheduledTask scheduledTask = regionScheduler.runAtFixedRate(plugin, world, chunkX, chunkZ, foliaConsumer, delay, period);
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
     }

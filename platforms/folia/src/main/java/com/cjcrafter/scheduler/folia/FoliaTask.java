@@ -1,4 +1,4 @@
-package com.scheduler.folia;
+package com.cjcrafter.scheduler.folia;
 
 import com.cjcrafter.scheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
