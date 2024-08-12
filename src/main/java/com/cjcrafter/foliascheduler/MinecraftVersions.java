@@ -1,8 +1,8 @@
 package com.cjcrafter.foliascheduler;
 
 import org.bukkit.Bukkit;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -25,6 +25,7 @@ public final class MinecraftVersions {
 
     private static final Map<String, Update> allUpdates = new LinkedHashMap<>();
     private static final Map<String, Version> allVersions = new LinkedHashMap<>();
+    private static @Nullable Version CURRENT = null;
 
     private MinecraftVersions() {
         // Prevent instantiation
@@ -54,9 +55,16 @@ public final class MinecraftVersions {
         return Collections.unmodifiableMap(allVersions);
     }
 
-
-    private static @NotNull Version parseCurrentVersion() {
-        return parseCurrentVersion(Bukkit.getVersion());
+    /**
+     * Returns the current Minecraft version.
+     *
+     * @return The current Minecraft version.
+     */
+    public static @NotNull Version getCurrent() {
+        if (CURRENT == null) {
+            CURRENT = parseCurrentVersion(Bukkit.getVersion());
+        }
+        return CURRENT;
     }
 
     /**
@@ -65,29 +73,23 @@ public final class MinecraftVersions {
      * @param versionString The version string.
      * @return The parsed version.
      */
-    @ApiStatus.Internal
-    public static @NotNull Version parseCurrentVersion(@NotNull String versionString) {
+    static @NotNull Version parseCurrentVersion(@NotNull String versionString) {
         Pattern pattern = Pattern.compile("\\d+\\.\\d+(\\.\\d+)?");
         Matcher matcher = pattern.matcher(versionString);
 
         if (matcher.find()) {
             String currentVersion = matcher.group();
-            if (!currentVersion.contains(".")) {
-                currentVersion += ".0";
-            }
             Version version = allVersions.get(currentVersion);
-            if (version != null) {
+            if (version != null)
                 return version;
-            }
+
+            version = allVersions.get(currentVersion + ".0");
+            if (version != null)
+                return version;
         }
 
         throw new IllegalStateException("Invalid version: " + versionString);
     }
-
-    /**
-     * The current version of the server.
-     */
-    public static final @NotNull Version CURRENT = parseCurrentVersion();
 
     /**
      * 1.12, the colorful blocks update (concrete)
@@ -256,7 +258,7 @@ public final class MinecraftVersions {
          * @return true if the server update equals this update.
          */
         public boolean isCurrent() {
-            return CURRENT.getUpdate().equals(this);
+            return getCurrent().getUpdate().equals(this);
         }
 
         /**
@@ -265,7 +267,7 @@ public final class MinecraftVersions {
          * @return true if the server update is newer than this update.
          */
         public boolean isOlder() {
-            return CURRENT.getUpdate().compareTo(this) > 0;
+            return getCurrent().getUpdate().compareTo(this) > 0;
         }
 
         /**
@@ -274,7 +276,7 @@ public final class MinecraftVersions {
          * @return true if the server update is at least this update.
          */
         public boolean isAtLeast() {
-            return CURRENT.getUpdate().compareTo(this) >= 0;
+            return getCurrent().getUpdate().compareTo(this) >= 0;
         }
 
         /**
@@ -283,7 +285,7 @@ public final class MinecraftVersions {
          * @return true if the server update is older than this update.
          */
         public boolean isBelow() {
-            return CURRENT.getUpdate().compareTo(this) < 0;
+            return getCurrent().getUpdate().compareTo(this) < 0;
         }
 
         /**
@@ -292,7 +294,7 @@ public final class MinecraftVersions {
          * @return true if the server update is at most this update.
          */
         public boolean isAtMost() {
-            return CURRENT.getUpdate().compareTo(this) <= 0;
+            return getCurrent().getUpdate().compareTo(this) <= 0;
         }
 
         /**
@@ -350,7 +352,7 @@ public final class MinecraftVersions {
          * @return true if the server version equals this version.
          */
         public boolean isCurrent() {
-            return CURRENT.equals(this);
+            return getCurrent().equals(this);
         }
 
         /**
@@ -359,7 +361,7 @@ public final class MinecraftVersions {
          * @return true if the server version is newer than this version.
          */
         public boolean isOlder() {
-            return CURRENT.compareTo(this) > 0;
+            return getCurrent().compareTo(this) > 0;
         }
 
         /**
@@ -368,7 +370,7 @@ public final class MinecraftVersions {
          * @return true if the server version is at least this version.
          */
         public boolean isAtLeast() {
-            return CURRENT.compareTo(this) >= 0;
+            return getCurrent().compareTo(this) >= 0;
         }
 
         /**
@@ -377,7 +379,7 @@ public final class MinecraftVersions {
          * @return true if the server version is older than this version.
          */
         public boolean isBelow() {
-            return CURRENT.compareTo(this) < 0;
+            return getCurrent().compareTo(this) < 0;
         }
 
         /**
@@ -386,7 +388,7 @@ public final class MinecraftVersions {
          * @return true if the server version is at most this version.
          */
         public boolean isAtMost() {
-            return CURRENT.compareTo(this) <= 0;
+            return getCurrent().compareTo(this) <= 0;
         }
 
         /**
