@@ -1,5 +1,4 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
     `java-library`
     `maven-publish`
     signing
@@ -7,7 +6,7 @@ plugins {
 }
 
 group = "com.cjcrafter"
-version = "0.3.4"
+version = "0.4.0"
 
 val githubOwner = "CJCrafter"
 val githubRepo = "FoliaScheduler"
@@ -23,24 +22,55 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.1.0")
 }
 
-kotlin {
-    jvmToolchain(8)
-}
-
 java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
     withSourcesJar()
     withJavadocJar()
 }
 
 tasks {
     jar {
-        // Include all compiled classes from subprojects
-        from(subprojects.map { it.sourceSets["main"].output })
+        manifest {
+            attributes(
+                "Multi-Release" to "true"
+            )
+        }
+        from(sourceSets.main.get().output)
+        dependsOn(":folia:jar", ":spigot:jar")
+        from(zipTree(project(":spigot").tasks.jar.get().archiveFile)) {
+            exclude("META-INF/**")
+        }
+        from(zipTree(project(":folia").tasks.jar.get().archiveFile)) {
+            into("META-INF/versions/17")
+        }
+    }
+
+    javadoc {
+        options {
+            this as StandardJavadocDocletOptions
+            // suppress warnings for missing Javadoc comments
+            addStringOption("Xdoclint:none", "-quiet")
+            addStringOption("encoding", "UTF-8")
+        }
+        source(sourceSets.main.get().allJava)
+        classpath = sourceSets.main.get().compileClasspath
+        exclude("META-INF/versions/**")
     }
 
     // Update sources JAR to include subproject sources
     named<Jar>("sourcesJar") {
-        from(subprojects.map { it.sourceSets["main"].allSource })
+        from(sourceSets.main.get().allSource)
+        from(project(":spigot").sourceSets.main.get().allSource)
+        from(project(":folia").sourceSets.main.get().allSource) {
+            into("META-INF/versions/17")
+        }
+    }
+
+    // Update Javadoc JAR to include subproject Javadoc
+    named<Jar>("javadocJar") {
+        from(javadoc)
     }
 }
 
