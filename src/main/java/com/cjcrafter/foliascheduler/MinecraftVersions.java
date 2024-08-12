@@ -21,9 +21,14 @@ import java.util.regex.Pattern;
  * You can get a specific {@link Version} object calling {@link Update#get(int)} with the patch
  * number.
  */
-public class MinecraftVersions {
+public final class MinecraftVersions {
+
     private static final Map<String, Update> allUpdates = new LinkedHashMap<>();
     private static final Map<String, Version> allVersions = new LinkedHashMap<>();
+
+    private MinecraftVersions() {
+        // Prevent instantiation
+    }
 
     /**
      * Returns an immutable map of all updates.
@@ -49,8 +54,8 @@ public class MinecraftVersions {
         return Collections.unmodifiableMap(allVersions);
     }
 
-    @NotNull
-    private static Version parseCurrentVersion() {
+
+    private static @NotNull Version parseCurrentVersion() {
         return parseCurrentVersion(Bukkit.getVersion());
     }
 
@@ -295,13 +300,13 @@ public class MinecraftVersions {
          *
          * @param patch The patch number.
          * @return The Version object for the specified patch.
+         * @throws IllegalArgumentException if no such version exists
          */
-        @NotNull
-        public Version get(int patch) {
+        public @NotNull Version get(int patch) {
             try {
                 return versions.get(patch);
             } catch (IndexOutOfBoundsException e) {
-                throw new IllegalArgumentException("Invalid patch number: " + patch);
+                throw new IllegalArgumentException("Unknown version: " + major + "." + minor + "." + patch);
             }
         }
 
@@ -411,6 +416,24 @@ public class MinecraftVersions {
          */
         public @NotNull Update getUpdate() {
             return update;
+        }
+
+        /**
+         * Returns the major version.
+         *
+         * @return The major version.
+         */
+        public int getMajor() {
+            return update.major;
+        }
+
+        /**
+         * Returns the minor version.
+         *
+         * @return The minor version.
+         */
+        public int getMinor() {
+            return update.minor;
         }
 
         /**
