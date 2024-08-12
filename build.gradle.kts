@@ -1,9 +1,14 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.Transformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContext
+import org.apache.tools.zip.ZipOutputStream
+
 plugins {
     kotlin("jvm") version "1.9.23"
     `java-library`
     `maven-publish`
     signing
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.cjcrafter"
@@ -32,10 +37,55 @@ java {
     withJavadocJar()
 }
 
+class KotlinMinimizer : Transformer {
+    override fun getName(): String {
+        return "KotlinMinimizer"
+    }
+
+    override fun canTransformResource(element: FileTreeElement?): Boolean {
+        // Only transform stuff from the kotlin package
+        return element?.name?.startsWith("kotlin") ?: false
+    }
+
+    override fun transform(context: TransformerContext?) {
+        // Exclude everything from the kotlin package
+    }
+
+    override fun hasTransformedResource(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun modifyOutputStream(os: ZipOutputStream?, preserveFileTimestamps: Boolean) {
+    }
+
+}
+
 tasks {
+    shadowJar {
+        archiveClassifier.set("")
+
+        subprojects.forEach { subproject ->
+            from(subproject.sourceSets.main.get().output)
+            configurations += subproject.configurations.runtimeClasspath.get()
+        }
+
+        minimize()
+
+
+        // exclude everything else from the kotlin package
+        relocate("kotlin.jvm.internal", "com.cjcrafter.scheduler.kotlin.jvm.internal") {
+            // stdlib
+            include("kotlin.jvm.internal.**")
+        }
+    }
+
     jar {
         // Include all compiled classes from subprojects
-        from(subprojects.map { it.sourceSets["main"].output })
+        enabled = false
+    }
+
+    build {
+        dependsOn(shadowJar)
     }
 
     // Update sources JAR to include subproject sources

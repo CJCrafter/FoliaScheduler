@@ -40,10 +40,10 @@ class FoliaCompatibility(val plugin: Plugin) {
 
     private fun assertRelocated() {
         // Cannot use "com.cjcrafter.scheduler" because some relocaters will change it
-        val originalPackage = listOf("com", "cjcrafter", "scheduler").joinToString(".")
+        val originalPackage = java.lang.String.join(".", "com", "cjcrafter", "scheduler")
         val relocatedPackage = this::class.java.`package`.name
         if (originalPackage == relocatedPackage) {
-            val authors = plugin.description.authors.joinToString(", ")
+            val authors = java.lang.String.join(", ", plugin.description.authors)
             val possiblePackage = plugin.javaClass.`package`.name + ".libs.scheduler"
             plugin.logger.warning("The FoliaScheduler lib has not been relocated!")
             plugin.logger.warning("The package is still in '$originalPackage'")
