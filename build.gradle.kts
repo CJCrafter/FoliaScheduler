@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.cjcrafter"
-version = "0.4.3"
+version = "0.4.4"
 
 val githubOwner = "CJCrafter"
 val githubRepo = "FoliaScheduler"
