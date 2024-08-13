@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.cjcrafter"
-version = "0.4.0"
+version = "0.4.4"
 
 val githubOwner = "CJCrafter"
 val githubRepo = "FoliaScheduler"
@@ -20,6 +20,10 @@ dependencies {
     // 1.12.2 is the oldest version we plan on officially supporting
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:24.1.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 }
 
 java {
@@ -32,18 +36,13 @@ java {
 
 tasks {
     jar {
-        manifest {
-            attributes(
-                "Multi-Release" to "true"
-            )
-        }
         from(sourceSets.main.get().output)
         dependsOn(":folia:jar", ":spigot:jar")
         from(zipTree(project(":spigot").tasks.jar.get().archiveFile)) {
             exclude("META-INF/**")
         }
         from(zipTree(project(":folia").tasks.jar.get().archiveFile)) {
-            into("META-INF/versions/17")
+            exclude("META-INF/**")
         }
     }
 
@@ -56,21 +55,16 @@ tasks {
         }
         source(sourceSets.main.get().allJava)
         classpath = sourceSets.main.get().compileClasspath
-        exclude("META-INF/versions/**")
     }
 
-    // Update sources JAR to include subproject sources
     named<Jar>("sourcesJar") {
         from(sourceSets.main.get().allSource)
         from(project(":spigot").sourceSets.main.get().allSource)
-        from(project(":folia").sourceSets.main.get().allSource) {
-            into("META-INF/versions/17")
-        }
+        from(project(":folia").sourceSets.main.get().allSource)
     }
 
-    // Update Javadoc JAR to include subproject Javadoc
-    named<Jar>("javadocJar") {
-        from(javadoc)
+    test {
+        useJUnitPlatform()
     }
 }
 
