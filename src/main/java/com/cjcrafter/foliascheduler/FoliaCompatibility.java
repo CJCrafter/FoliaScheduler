@@ -21,12 +21,12 @@ public class FoliaCompatibility {
         try {
             try {
                 Server.class.getMethod("isOwnedByCurrentRegion", Location.class);
-                scheduler = Class.forName(this.getClass().getPackage().getName() + ".folia.FoliaScheduler")
+                scheduler = Class.forName(this.getClass().getPackage().getName() + ".folia.FoliaServer")
                         .asSubclass(ServerImplementation.class)
                         .getConstructor(Plugin.class)
                         .newInstance(plugin);
             } catch (NoSuchMethodException ex) {
-                scheduler = Class.forName(this.getClass().getPackage().getName() + ".bukkit.BukkitScheduler")
+                scheduler = Class.forName(this.getClass().getPackage().getName() + ".bukkit.BukkitServer")
                         .asSubclass(ServerImplementation.class)
                         .getConstructor(Plugin.class)
                         .newInstance(plugin);

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.cjcrafter"
-version = "0.4.1"
+version = "0.4.3"
 
 val githubOwner = "CJCrafter"
 val githubRepo = "FoliaScheduler"
@@ -36,18 +36,13 @@ java {
 
 tasks {
     jar {
-        manifest {
-            attributes(
-                "Multi-Release" to "true"
-            )
-        }
         from(sourceSets.main.get().output)
         dependsOn(":folia:jar", ":spigot:jar")
         from(zipTree(project(":spigot").tasks.jar.get().archiveFile)) {
             exclude("META-INF/**")
         }
         from(zipTree(project(":folia").tasks.jar.get().archiveFile)) {
-            into("META-INF/versions/17")
+            exclude("META-INF/**")
         }
     }
 
@@ -60,21 +55,12 @@ tasks {
         }
         source(sourceSets.main.get().allJava)
         classpath = sourceSets.main.get().compileClasspath
-        exclude("META-INF/versions/**")
     }
 
-    // Update sources JAR to include subproject sources
     named<Jar>("sourcesJar") {
         from(sourceSets.main.get().allSource)
         from(project(":spigot").sourceSets.main.get().allSource)
-        from(project(":folia").sourceSets.main.get().allSource) {
-            into("META-INF/versions/17")
-        }
-    }
-
-    // Update Javadoc JAR to include subproject Javadoc
-    named<Jar>("javadocJar") {
-        from(javadoc)
+        from(project(":folia").sourceSets.main.get().allSource)
     }
 
     test {
