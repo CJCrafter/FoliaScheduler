@@ -10,10 +10,10 @@ you can now schedule tasks on entities, regions, asynchronously, and more!
 ## Features
 * Java 1.8+ (but you will need a JDK of 17+ to shade the Folia compatibility classes!)
 * Folia 1.20+
-* Spigot 1.12.2+ (and *likely* any older version)
-* Paper 1.12.2+ (and *likely* any older version)
+* Spigot/Paper 1.12.2+ (and *likely* any older version)
 * Task chaining (`CompletableFuture` support)
-* Easy task cancellation (Some libs don't have this... for some crazy reason)
+* Easy task cancellation through both `Consumer<TaskImplementation>` and return values.
+* `ServerVersions` and `MinecraftVersions` utility classes for checking server type and version. 
 
 ## How it works
 We simply try to use Folia's scheduler (included in paper server jars) if it's available. If not, we fallback to
@@ -28,6 +28,46 @@ Spigot's scheduler (using `BukkitRunnable`, which allows basically any server ve
 </dependency>
 ```
 
+<details>
+<summary><b>[Full Maven + Shade example]</b></summary>
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.cjcrafter</groupId>
+        <artifactId>foliascheduler</artifactId>
+        <version>0.4.5</version>
+    </dependency>
+</dependencies>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.6.0</version>  <!-- always check for latest -->
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <relocations>
+                            <relocation>
+                                <pattern>com.cjcrafter.foliascheduler</pattern>
+                                <shadedPattern>com.example.foliascheduler</shadedPattern>
+                            </relocation>
+                        </relocations>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+</details>
+
 ## Gradle
 ```kotlin
 repositories {
@@ -38,6 +78,39 @@ dependencies {
     implementation("com.cjcrafter:foliascheduler:0.4.5")
 }
 ```
+
+<details>
+<summary><b>[Full Gradle + Shade example]</b></summary>
+
+```kotlin
+plugins {
+    java  // or kotlin("jvm") version "..."
+    //id("com.github.johnrengelman.shadow") version "8.1.1"  // for below Java 21... always check for latest
+    id("io.github.gooler.shadow") version "8.1.7"  // for Java 21+... always check for latest
+    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"  // always check for latest
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // TODO add your version of Spigot/Paper here
+    implementation("com.cjcrafter:foliascheduler:0.4.5")
+}
+
+// See https://github.com/Minecrell/plugin-yml
+bukkit {
+    main = "com.example.MyPlugin"
+    foliaSupported = true
+}
+
+tasks.shadowJar {
+    archiveFileName.set("MyPlugin-${project.version}.jar")
+    relocate("com.cjcrafter.foliascheduler", "com.example.foliascheduler")
+}
+```
+</details>
 
 ## How do I convert my whole plugin to Folia?
 Pretty much any plugin is already "compatible" with Folia. Usually, the only change you need to worry about
@@ -60,8 +133,20 @@ Here are some PRs that show how to convert a plugin to Folia:
   * When you use async, you should probably use a callback... See examples below...
 * It's generally safe to send packets to players on any thread, since it doesn't modify the state of anything. 
 
+## How do I check the server's version?
+We provide 2 utility classes:
+* `ServerVersions` - Check `isFolia()` and `isPaper()`
+* `MinecraftVersions` - Get current `major.minor.patch` version
 
-## Examples
+```java
+    if (!MinecraftVersions.UPDATE_AQUATIC.isAtLeast()) {
+        getLogger().warning("Uh oh! You're not on 1.13+! This plugin may not work correctly!");
+        // disable plugin
+    }
+```
+
+## Scheduler Examples
+
 #### Modify an entity on the next tick
 ```java
     Plugin plugin = null;
