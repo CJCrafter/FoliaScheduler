@@ -96,7 +96,7 @@ publishing {
 
             pom {
                 name.set(githubRepo)
-                description.set("Spigot Library to check current server version")
+                description.set("Task scheduler for Spigot and Folia plugins")
                 url.set("https://github.com/$githubOwner/$githubRepo")
 
                 groupId = group.toString()
