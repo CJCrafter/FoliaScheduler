@@ -1,4 +1,4 @@
-package com.cjcrafter.foliascheduler;
+package com.cjcrafter.foliascheduler.util;
 
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
