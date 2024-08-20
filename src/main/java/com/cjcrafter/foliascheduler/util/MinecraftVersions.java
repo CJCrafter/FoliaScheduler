@@ -101,20 +101,17 @@ public final class MinecraftVersions {
             throw new IllegalArgumentException("Could not find any version in: " + versionString);
 
         String currentVersion = matcher.group();
-        int countDots = currentVersion.length() - currentVersion.replace(".", "").length();
-        if (countDots == 1)
-            currentVersion += ".0";
+        String[] parts = currentVersion.split("\\.");
+        int major = Integer.parseInt(parts[0]);
+        int minor = Integer.parseInt(parts[1]);
+        int patch = parts.length == 3 ? Integer.parseInt(parts[2]) : 0;
 
         // Check if the version is for a Minecraft version that we know about
-        Version version = allVersions.get(currentVersion);
+        Version version = allVersions.get(major + "." + minor + "." + patch);
         if (version != null)
             return version;
 
         // If the version is not known, create a new "unknown" version
-        String[] parts = currentVersion.split("\\.");
-        int major = Integer.parseInt(parts[0]);
-        int minor = Integer.parseInt(parts[1]);
-        int patch = Integer.parseInt(parts[2]);
         return new Version(major, minor, patch, -1);
     }
 
@@ -448,6 +445,11 @@ public final class MinecraftVersions {
 
         /**
          * Returns the protocol version, like R1, R2, etc.
+         * <p>
+         * If the version is "unknown" (not included in the utility), this will
+         * return -1. This happens usually because a new version of Minecraft was
+         * released after this utility was created... Be sure to keep this
+         * updated!
          *
          * @return The protocol version.
          */
