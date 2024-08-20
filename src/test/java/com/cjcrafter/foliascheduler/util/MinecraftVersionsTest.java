@@ -46,7 +46,7 @@ public class MinecraftVersionsTest {
     }
 
     @Test
-    public void ensureUpdateOrderIsIncreasing() {
+    public void testEnsureUpdateOrderIsIncreasing() {
         MinecraftVersions.Update previous = null;
         for (MinecraftVersions.Update update : MinecraftVersions.updates().values()) {
             if (previous != null && previous.compareTo(update) > 0) {
@@ -57,7 +57,7 @@ public class MinecraftVersionsTest {
     }
 
     @Test
-    public void ensureVersionOrderIsIncreasing() {
+    public void testEnsureVersionOrderIsIncreasing() {
         MinecraftVersions.Version previous = null;
         for (MinecraftVersions.Version version : MinecraftVersions.versions().values()) {
             if (previous != null && previous.compareTo(version) > 0) {
@@ -68,7 +68,7 @@ public class MinecraftVersionsTest {
     }
 
     @Test
-    public void cannotAddVersions() {
+    public void testCannotAddVersions() {
         assertThrows(IllegalStateException.class, () -> {
             MinecraftVersions.Update update = MinecraftVersions.BUZZY_BEES;
             update.version(7, 5);
