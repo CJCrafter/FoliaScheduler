@@ -340,6 +340,19 @@ public final class MinecraftVersions {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Update update = (Update) o;
+            return major == update.major && minor == update.minor && Objects.equals(versions, update.versions);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(major, minor, versions);
+        }
+
+        @Override
         public @NotNull String toString() {
             return major + "." + minor;
         }
@@ -496,6 +509,19 @@ public final class MinecraftVersions {
             int minorCompare = Integer.compare(minor, other.minor);
             if (minorCompare != 0) return minorCompare;
             return Integer.compare(patch, other.patch);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Version version = (Version) o;
+            return major == version.major && minor == version.minor && patch == version.patch;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(major, minor, patch);
         }
 
         @Override
