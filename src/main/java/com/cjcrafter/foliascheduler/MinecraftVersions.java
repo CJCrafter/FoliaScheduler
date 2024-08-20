@@ -55,7 +55,7 @@ public final class MinecraftVersions {
      * Returns an immutable map of all updates.
      * <p>
      * The key is the result of {@link Update#toString()}, and the value is the
-     * {@link Update} object. Only updates down to 1.12 are included.
+     * {@link Update} object.
      *
      * @return An immutable map of all updates.
      */
@@ -97,18 +97,25 @@ public final class MinecraftVersions {
         Pattern pattern = Pattern.compile("\\d+\\.\\d+(\\.\\d+)?");
         Matcher matcher = pattern.matcher(versionString);
 
-        if (matcher.find()) {
-            String currentVersion = matcher.group();
-            Version version = allVersions.get(currentVersion);
-            if (version != null)
-                return version;
+        if (!matcher.find())
+            throw new IllegalArgumentException("Could not find any version in: " + versionString);
 
-            version = allVersions.get(currentVersion + ".0");
-            if (version != null)
-                return version;
-        }
+        String currentVersion = matcher.group();
+        int countDots = currentVersion.length() - currentVersion.replace(".", "").length();
+        if (countDots == 1)
+            currentVersion += ".0";
 
-        throw new IllegalStateException("Invalid version: " + versionString);
+        // Check if the version is for a Minecraft version that we know about
+        Version version = allVersions.get(currentVersion);
+        if (version != null)
+            return version;
+
+        // If the version is not known, create a new "unknown" version
+        String[] parts = currentVersion.split("\\.");
+        int major = Integer.parseInt(parts[0]);
+        int minor = Integer.parseInt(parts[1]);
+        int patch = Integer.parseInt(parts[2]);
+        return new Version(major, minor, patch, -1);
     }
 
     /**
@@ -230,7 +237,7 @@ public final class MinecraftVersions {
          * Creates a new Update instance.
          *
          * @param major The major version. Always 1.
-         * @param minor The minor version. Always 12 or higher.
+         * @param minor The minor version.
          * @param init A Consumer to initialize the versions for this update.
          */
         public Update(int major, int minor, @NotNull Consumer<Update> init) {
