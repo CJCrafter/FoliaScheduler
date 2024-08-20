@@ -276,7 +276,7 @@ public final class MinecraftVersions {
             if (lock) {
                 throw new IllegalStateException("Cannot add versions after initialization");
             }
-            Version version = new Version(this.major, this.minor, patch, protocol);
+            Version version = new Version(this, patch, protocol);
             versions.add(version);
         }
 

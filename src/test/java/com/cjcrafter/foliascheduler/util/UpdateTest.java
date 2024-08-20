@@ -32,8 +32,9 @@ public class UpdateTest {
     @Test
     public void testEquals() {
         // 1.13 == 1.13
-        int compare = MinecraftVersions.UPDATE_AQUATIC.compareTo(MinecraftVersions.UPDATE_AQUATIC);
+        MinecraftVersions.Update other = MinecraftVersions.parseCurrentVersion("1.13").getUpdate();
+        int compare = MinecraftVersions.UPDATE_AQUATIC.compareTo(other);
         assertEquals(0, compare);
-        assertEquals(MinecraftVersions.UPDATE_AQUATIC, MinecraftVersions.UPDATE_AQUATIC);
+        assertEquals(MinecraftVersions.UPDATE_AQUATIC, other);
     }
 }
