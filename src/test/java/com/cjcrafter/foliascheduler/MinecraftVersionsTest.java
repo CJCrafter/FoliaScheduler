@@ -42,7 +42,7 @@ public class MinecraftVersionsTest {
         "Who knows"
     })
     public void testParseVersionWithInvalidVersion(String versionString) {
-        assertThrows(IllegalStateException.class, () -> MinecraftVersions.parseCurrentVersion(versionString));
+        assertThrows(IllegalArgumentException.class, () -> MinecraftVersions.parseCurrentVersion(versionString));
     }
 
     @Test
@@ -76,46 +76,32 @@ public class MinecraftVersionsTest {
     }
 
     @Test
-    public void lessThanUpdate() {
-        // 1.12 < 1.13
-        int compare = MinecraftVersions.WORLD_OF_COLOR.compareTo(MinecraftVersions.UPDATE_AQUATIC);
-        assertTrue(compare < 0);
+    public void testAllowUnknownVersion() {
+        // no way! Minecraft 2.0!
+        MinecraftVersions.Version version = MinecraftVersions.parseCurrentVersion("Minecraft 2.0");
 
-        // 1.13 < 1.20
-        int compare2 = MinecraftVersions.UPDATE_AQUATIC.compareTo(MinecraftVersions.TRAILS_AND_TAILS);
-        assertTrue(compare2 < 0);
+        // unknown versions will have a protocol of -1
+        assertEquals(-1, version.getProtocol());
+        assertEquals("2.0.0", version.toString());
     }
 
     @Test
-    public void greaterThanUpdate() {
-        // 1.20 > 1.13
-        int compare = MinecraftVersions.TRAILS_AND_TAILS.compareTo(MinecraftVersions.UPDATE_AQUATIC);
-        assertTrue(compare > 0);
+    public void testUnknownVersionGreaterThan() {
+        // no way! Minecraft 2.0!
+        MinecraftVersions.Version version = MinecraftVersions.parseCurrentVersion("Minecraft 2.0");
+        MinecraftVersions.Version updateAquatic = MinecraftVersions.UPDATE_AQUATIC.get(2);
 
-        // 1.13 > 1.12
-        int compare2 = MinecraftVersions.UPDATE_AQUATIC.compareTo(MinecraftVersions.WORLD_OF_COLOR);
-        assertTrue(compare2 > 0);
+        // We expect 2.0.0 to be newer than 1.13.2
+        assertTrue(version.compareTo(updateAquatic) > 0);
     }
 
     @Test
-    public void lessThanVersion() {
-        // 1.12.2 < 1.13.2
-        int compare = MinecraftVersions.WORLD_OF_COLOR.get(2).compareTo(MinecraftVersions.UPDATE_AQUATIC.get(2));
-        assertTrue(compare < 0);
+    public void testUnknownVersionLessThan() {
+        // no way! Minecraft 0.0!
+        MinecraftVersions.Version version = MinecraftVersions.parseCurrentVersion("Minecraft 0.0");
+        MinecraftVersions.Version updateAquatic = MinecraftVersions.UPDATE_AQUATIC.get(2);
 
-        // 1.14.1 < 1.14.2
-        int compare2 = MinecraftVersions.VILLAGE_AND_PILLAGE.get(1).compareTo(MinecraftVersions.VILLAGE_AND_PILLAGE.get(2));
-        assertTrue(compare2 < 0);
-    }
-
-    @Test
-    public void greaterThanVersion() {
-        // 1.13.2 > 1.12.2
-        int compare = MinecraftVersions.UPDATE_AQUATIC.get(2).compareTo(MinecraftVersions.WORLD_OF_COLOR.get(2));
-        assertTrue(compare > 0);
-
-        // 1.14.2 > 1.14.1
-        int compare2 = MinecraftVersions.VILLAGE_AND_PILLAGE.get(2).compareTo(MinecraftVersions.VILLAGE_AND_PILLAGE.get(1));
-        assertTrue(compare2 > 0);
+        // We expect 0.0 to be older than 1.13.2
+        assertTrue(version.compareTo(updateAquatic) < 0);
     }
 }
