@@ -1,7 +1,6 @@
 package com.cjcrafter.foliascheduler;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -74,5 +73,49 @@ public class MinecraftVersionsTest {
             MinecraftVersions.Update update = MinecraftVersions.BUZZY_BEES;
             update.version(7, 5);
         });
+    }
+
+    @Test
+    public void lessThanUpdate() {
+        // 1.12 < 1.13
+        int compare = MinecraftVersions.WORLD_OF_COLOR.compareTo(MinecraftVersions.UPDATE_AQUATIC);
+        assertTrue(compare < 0);
+
+        // 1.13 < 1.20
+        int compare2 = MinecraftVersions.UPDATE_AQUATIC.compareTo(MinecraftVersions.TRAILS_AND_TAILS);
+        assertTrue(compare2 < 0);
+    }
+
+    @Test
+    public void greaterThanUpdate() {
+        // 1.20 > 1.13
+        int compare = MinecraftVersions.TRAILS_AND_TAILS.compareTo(MinecraftVersions.UPDATE_AQUATIC);
+        assertTrue(compare > 0);
+
+        // 1.13 > 1.12
+        int compare2 = MinecraftVersions.UPDATE_AQUATIC.compareTo(MinecraftVersions.WORLD_OF_COLOR);
+        assertTrue(compare2 > 0);
+    }
+
+    @Test
+    public void lessThanVersion() {
+        // 1.12.2 < 1.13.2
+        int compare = MinecraftVersions.WORLD_OF_COLOR.get(2).compareTo(MinecraftVersions.UPDATE_AQUATIC.get(2));
+        assertTrue(compare < 0);
+
+        // 1.14.1 < 1.14.2
+        int compare2 = MinecraftVersions.VILLAGE_AND_PILLAGE.get(1).compareTo(MinecraftVersions.VILLAGE_AND_PILLAGE.get(2));
+        assertTrue(compare2 < 0);
+    }
+
+    @Test
+    public void greaterThanVersion() {
+        // 1.13.2 > 1.12.2
+        int compare = MinecraftVersions.UPDATE_AQUATIC.get(2).compareTo(MinecraftVersions.WORLD_OF_COLOR.get(2));
+        assertTrue(compare > 0);
+
+        // 1.14.2 > 1.14.1
+        int compare2 = MinecraftVersions.VILLAGE_AND_PILLAGE.get(2).compareTo(MinecraftVersions.VILLAGE_AND_PILLAGE.get(1));
+        assertTrue(compare2 > 0);
     }
 }
