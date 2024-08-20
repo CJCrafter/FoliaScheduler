@@ -20,15 +20,35 @@ import java.util.regex.Pattern;
  * <p>
  * You can get a specific {@link Version} object calling {@link Update#get(int)} with the patch
  * number.
+ * <p>
+ * Note that this utility will need to be updated to access newer versions of Minecraft. If
+ * this utility is used on a newer version of Minecraft, it will be parsed into an "unknown"
+ * version, which will still be able to function as expected (Using {@link Version#isAtLeast()}
+ * will still work, for example). However, {@link #updates()} and {@link #versions()} will not
+ * contain the newer versions.
  */
 public final class MinecraftVersions {
 
-    private static final Map<String, Update> allUpdates = new LinkedHashMap<>();
-    private static final Map<String, Version> allVersions = new LinkedHashMap<>();
+    private static final @NotNull Map<String, Update> allUpdates = new LinkedHashMap<>();
+    private static final @NotNull Map<String, Version> allVersions = new LinkedHashMap<>();
     private static @Nullable Version CURRENT = null;
 
     private MinecraftVersions() {
         // Prevent instantiation
+    }
+
+    /**
+     * Used internally to populate <code>allUpdates</code> and <code>allVersions</code>.
+     *
+     * @param update The update to register.
+     * @return The registered update.
+     */
+    private static @NotNull Update registerUpdate(@NotNull Update update) {
+        allUpdates.put(update.toString(), update);
+        for (Version version : update.versions) {
+            allVersions.put(version.toString(), version);
+        }
+        return update;
     }
 
     /**
@@ -47,7 +67,7 @@ public final class MinecraftVersions {
      * Returns an immutable map of all versions.
      * <p>
      * The key is the result of {@link Version#toString()}, and the value is the
-     * {@link Version} object. Only versions down to "1.12.0" are included.
+     * {@link Version} object.
      *
      * @return An immutable map of all versions.
      */
@@ -94,85 +114,85 @@ public final class MinecraftVersions {
     /**
      * 1.12, the colorful blocks update (concrete)
      */
-    public static final @NotNull Update WORLD_OF_COLOR = new Update(1, 12, update -> {
+    public static final @NotNull Update WORLD_OF_COLOR = registerUpdate(new Update(1, 12, update -> {
         update.version(0, 1); // 1.12
         update.version(1, 1); // 1.12.1
         update.version(2, 1); // 1.12.2
-    });
+    }));
 
     /**
      * 1.13, ocean update (the flattening, waterloggable blocks, sprint swimming, brigadier commands)
      */
-    public static final @NotNull Update UPDATE_AQUATIC = new Update(1, 13, update -> {
+    public static final @NotNull Update UPDATE_AQUATIC = registerUpdate(new Update(1, 13, update -> {
         update.version(0, 1); // 1.13
         update.version(1, 2); // 1.13.1
         update.version(2, 2); // 1.13.2
-    });
+    }));
 
     /**
      * 1.14, villagers update (sneaking below slabs, new village generation)
      */
-    public static final @NotNull Update VILLAGE_AND_PILLAGE = new Update(1, 14, update -> {
+    public static final @NotNull Update VILLAGE_AND_PILLAGE = registerUpdate(new Update(1, 14, update -> {
         update.version(0, 1); // 1.14
         update.version(1, 1); // 1.14.1
         update.version(2, 1); // 1.14.2
         update.version(3, 1); // 1.14.3
         update.version(4, 1); // 1.14.4
-    });
+    }));
 
     /**
      * 1.15, bees update (bug fixes, bees)
      */
-    public static final @NotNull Update BUZZY_BEES = new Update(1, 15, update -> {
+    public static final @NotNull Update BUZZY_BEES = registerUpdate(new Update(1, 15, update -> {
         update.version(0, 1); // 1.15
         update.version(1, 1); // 1.15.1
         update.version(2, 1); // 1.15.2
-    });
+    }));
 
     /**
      * 1.16, nether update (crimson, fungus, nether generation, biome fogs)
      */
-    public static final @NotNull Update NETHER_UPDATE = new Update(1, 16, update -> {
+    public static final @NotNull Update NETHER_UPDATE = registerUpdate(new Update(1, 16, update -> {
         update.version(0, 1); // 1.16
         update.version(1, 1); // 1.16.1
         update.version(2, 2); // 1.16.2
         update.version(3, 2); // 1.16.3
         update.version(4, 3); // 1.16.4
         update.version(5, 3); // 1.16.5
-    });
+    }));
 
     /**
      * 1.17, caves and cliffs part 1 (tuff, new mobs, new blocks)
      */
-    public static final @NotNull Update CAVES_AND_CLIFFS_1 = new Update(1, 17, update -> {
+    public static final @NotNull Update CAVES_AND_CLIFFS_1 = registerUpdate(new Update(1, 17, update -> {
         update.version(0, 1); // 1.17
         update.version(1, 1); // 1.17.1
-    });
+    }));
 
     /**
      * 1.18, caves and cliffs part 2 (new generations)
      */
-    public static final @NotNull Update CAVES_AND_CLIFFS_2 = new Update(1, 18, update -> {
+    public static final @NotNull Update CAVES_AND_CLIFFS_2 = registerUpdate(new Update(1, 18, update -> {
         update.version(0, 1); // 1.18
         update.version(1, 1); // 1.18.1
         update.version(2, 2); // 1.18.2
-    });
+    }));
 
     /**
      * 1.19, the deep dark update (sculk, warden, mud, mangrove, etc.)
      */
-    public static final @NotNull Update WILD_UPDATE = new Update(1, 19, update -> {
+    public static final @NotNull Update WILD_UPDATE = registerUpdate(new Update(1, 19, update -> {
         update.version(0, 1); // 1.19
         update.version(1, 1); // 1.19.1
         update.version(2, 2); // 1.19.2
         update.version(3, 3); // 1.19.3
         update.version(4, 3); // 1.19.4
-    });
+    }));
 
     /**
      * 1.20, the archaeology update (cherry grove, sniffers, etc.)
      */
-    public static final @NotNull Update TRAILS_AND_TAILS = new Update(1, 20, update -> {
+    public static final @NotNull Update TRAILS_AND_TAILS = registerUpdate(new Update(1, 20, update -> {
         update.version(0, 1); // 1.20
         update.version(1, 1); // 1.20.1
         update.version(2, 2); // 1.20.2
@@ -180,15 +200,15 @@ public final class MinecraftVersions {
         update.version(4, 3); // 1.20.4
         update.version(5, 4); // 1.20.5
         update.version(6, 4); // 1.20.6
-    });
+    }));
 
     /**
      * 1.21, the dungeons update (mace, potions, paintings, etc.)
      */
-    public static final @NotNull Update TRICKY_TRIALS = new Update(1, 21, update -> {
+    public static final @NotNull Update TRICKY_TRIALS = registerUpdate(new Update(1, 21, update -> {
         update.version(0, 1); // 1.21
         update.version(1, 1); // 1.21.1
-    });
+    }));
 
     /**
      * Represents a "big" Minecraft update, e.g., 1.13 -> 1.14
@@ -198,6 +218,13 @@ public final class MinecraftVersions {
         private final int minor;
         private final List<Version> versions = new ArrayList<>();
         private boolean lock = false;
+
+        public Update(int major, int minor, @NotNull List<Version> versions) {
+            this.major = major;
+            this.minor = minor;
+            this.versions.addAll(versions);
+            lock = true;
+        }
 
         /**
          * Creates a new Update instance.
@@ -211,10 +238,6 @@ public final class MinecraftVersions {
             this.minor = minor;
             init.accept(this);
             lock = true;
-            allUpdates.put(toString(), this);
-            for (Version version : versions) {
-                allVersions.put(version.toString(), version);
-            }
         }
 
         /**
@@ -236,20 +259,18 @@ public final class MinecraftVersions {
         }
 
         /**
-         * Adds a new version to this update.
+         * Used internally to add a new version to this update.
          *
          * @param patch The patch number.
          * @param protocol The protocol version.
-         * @return The created Version object.
          * @throws IllegalStateException if versions are added after initialization.
          */
-        @NotNull Version version(int patch, int protocol) {
+        void version(int patch, int protocol) {
             if (lock) {
                 throw new IllegalStateException("Cannot add versions after initialization");
             }
-            Version version = new Version(this, patch, protocol);
+            Version version = new Version(this.major, this.minor, patch, protocol);
             versions.add(version);
-            return version;
         }
 
         /**
@@ -266,7 +287,7 @@ public final class MinecraftVersions {
          *
          * @return true if the server update is newer than this update.
          */
-        public boolean isOlder() {
+        public boolean isAbove() {
             return getCurrent().getUpdate().compareTo(this) > 0;
         }
 
@@ -325,13 +346,34 @@ public final class MinecraftVersions {
     }
 
     /**
-     * Represents a patch for an {@link Update}. e.g., 1.16.4 -> 1.16.5
+     * Holds a specific version of an update, formatted in major.minor.patch. For example, 1.13.2.
      */
     public static class Version implements Comparable<Version> {
 
         private final @NotNull Update update;
+        private final int major;
+        private final int minor;
         private final int patch;
         private final int protocol;
+
+        /**
+         * Creates a new Version instance.
+         *
+         * @param major The major number.
+         * @param minor The minor number.
+         * @param patch The patch number.
+         * @param protocol The current protocol version.
+         */
+        public Version(int major, int minor, int patch, int protocol) {
+            this.major = major;
+            this.minor = minor;
+            this.patch = patch;
+            this.protocol = protocol;
+
+            // Create a "fake" update to hold this version, so comparisons can
+            // be made between updates. This is not added to the allUpdates map.
+            this.update = new Update(major, minor, Collections.singletonList(this));
+        }
 
         /**
          * Creates a new Version instance.
@@ -342,8 +384,55 @@ public final class MinecraftVersions {
          */
         public Version(@NotNull Update update, int patch, int protocol) {
             this.update = update;
+            this.major = update.major;
+            this.minor = update.minor;
             this.patch = patch;
             this.protocol = protocol;
+        }
+
+        /**
+         * Returns the parent update, or null if this version was not created from an update.
+         *
+         * @return The parent update.
+         */
+        public @NotNull Update getUpdate() {
+            return update;
+        }
+
+        /**
+         * Returns the major version.
+         *
+         * @return The major version.
+         */
+        public int getMajor() {
+            return major;
+        }
+
+        /**
+         * Returns the minor version.
+         *
+         * @return The minor version.
+         */
+        public int getMinor() {
+            return minor;
+        }
+
+        /**
+         * Returns the patch number, the last number in the version.
+         *
+         * @return The patch number.
+         */
+        public int getPatch() {
+            return patch;
+        }
+
+        /**
+         * Returns the protocol version, like R1, R2, etc.
+         *
+         * @return The protocol version.
+         */
+        public int getProtocol() {
+            return protocol;
         }
 
         /**
@@ -360,7 +449,7 @@ public final class MinecraftVersions {
          *
          * @return true if the server version is newer than this version.
          */
-        public boolean isOlder() {
+        public boolean isAbove() {
             return getCurrent().compareTo(this) > 0;
         }
 
@@ -397,63 +486,21 @@ public final class MinecraftVersions {
          * @return The version in protocol format.
          */
         public @NotNull String toProtocolString() {
-            return "v" + update.major + "_" + update.minor + "_R" + protocol;
+            return "v" + major + "_" + minor + "_R" + protocol;
         }
 
         @Override
         public int compareTo(@NotNull Version other) {
-            int updateCompare = update.compareTo(other.update);
-            return updateCompare != 0 ? updateCompare : Integer.compare(patch, other.patch);
+            int majorCompare = Integer.compare(major, other.major);
+            if (majorCompare != 0) return majorCompare;
+            int minorCompare = Integer.compare(minor, other.minor);
+            if (minorCompare != 0) return minorCompare;
+            return Integer.compare(patch, other.patch);
         }
 
         @Override
         public @NotNull String toString() {
-            return update.major + "." + update.minor + "." + patch;
-        }
-
-        /**
-         * Returns the parent update.
-         *
-         * @return The parent update.
-         */
-        public @NotNull Update getUpdate() {
-            return update;
-        }
-
-        /**
-         * Returns the major version.
-         *
-         * @return The major version.
-         */
-        public int getMajor() {
-            return update.major;
-        }
-
-        /**
-         * Returns the minor version.
-         *
-         * @return The minor version.
-         */
-        public int getMinor() {
-            return update.minor;
-        }
-
-        /**
-         * Returns the patch number, the last number in the version.
-         *
-         * @return The patch number.
-         */
-        public int getPatch() {
-            return patch;
-        }
-
-        /**
-         * Returns the protocol version, like R1, R2, etc.
-         *
-         * @return The protocol version.
-         */
-        public int getProtocol() {
-            return protocol;
+            return major + "." + minor + "." + patch;
         }
     }
 }
