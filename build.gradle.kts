@@ -1,8 +1,24 @@
+import okhttp3.internal.format
+
 plugins {
     `java-library`
     `maven-publish`
     signing
+    id("com.diffplug.spotless") version "6.25.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+}
+
+subprojects {
+    apply(plugin = "com.diffplug.spotless")
+}
+
+allprojects {
+    spotless {
+        java {
+            googleJavaFormat().aosp()
+            formatAnnotations()
+        }
+    }
 }
 
 group = "com.cjcrafter"
