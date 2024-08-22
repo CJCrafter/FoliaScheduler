@@ -1,4 +1,4 @@
-package com.cjcrafter.foliascheduler;
+package com.cjcrafter.foliascheduler.util;
 
 /**
  * Utility class to determine the fork type of the server.
