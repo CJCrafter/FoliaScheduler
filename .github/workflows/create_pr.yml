@@ -30,14 +30,18 @@ jobs:
         id: version
         run: |
           CURRENT_VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
           NEW_VERSION="${CURRENT_VERSION%.*}.$((${CURRENT_VERSION##*.} + 1))"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
-          sed -i "s/version = \".*\"/version = \"$NEW_VERSION\"/g" build.gradle.kts
+
+      - name: Update build.gradle.kts version
+        run: |
+          sed -i "s/version = \"$CURRENT_VERSION\"/version = \"${{ steps.version.outputs.NEW_VERSION }}\"/g" build.gradle.kts
 
       - name: Update README version
         run: |
-          sed -i "s/<version>.*<\/version>/<version>${{ steps.version.outputs.NEW_VERSION }}<\/version>/g" README.md
-          sed -i "s/implementation(\"com.cjcrafter:foliascheduler:.*\")/implementation(\"com.cjcrafter:foliascheduler:${{ steps.version.outputs.NEW_VERSION }}\")/g" README.md
+          sed -i "s/<version>$CURRENT_VERSION<\/version>/<version>${{ steps.version.outputs.NEW_VERSION }}<\/version>/g" README.md
+          sed -i "s/implementation(\"com.cjcrafter:foliascheduler:$CURRENT_VERSION\")/implementation(\"com.cjcrafter:foliascheduler:${{ steps.version.outputs.NEW_VERSION }}\")/g" README.md
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
