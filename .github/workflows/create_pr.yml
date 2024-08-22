@@ -36,7 +36,7 @@ jobs:
 
       - name: Update build.gradle.kts version
         run: |
-          sed -i "s/version = \"$CURRENT_VERSION\"/version = \"$NEW_VERSION\"/g" build.gradle.kts
+          sed -i "s/version = \"$CURRENT_VERSION\"/version = \"${{ steps.version.outputs.NEW_VERSION }}\"/g" build.gradle.kts
 
       - name: Update README version
         run: |
