@@ -2,12 +2,11 @@ package com.cjcrafter.foliascheduler.bukkit;
 
 import com.cjcrafter.foliascheduler.SchedulerImplementation;
 import com.cjcrafter.foliascheduler.TaskImplementation;
+import java.util.function.Function;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Function;
 
 @ApiStatus.Internal
 public class BukkitSyncScheduler implements SchedulerImplementation {
@@ -19,9 +18,8 @@ public class BukkitSyncScheduler implements SchedulerImplementation {
     }
 
     private <T> @NotNull BukkitRunnable buildBukkitRunnable(
-        @NotNull Function<TaskImplementation<T>, T> function,
-        @NotNull BukkitTask<T> taskImplementation
-    ) {
+            @NotNull Function<TaskImplementation<T>, T> function,
+            @NotNull BukkitTask<T> taskImplementation) {
         return new BukkitRunnable() {
             @Override
             public void run() {
@@ -30,7 +28,6 @@ public class BukkitSyncScheduler implements SchedulerImplementation {
             }
         };
     }
-
 
     @Override
     public void execute(@NotNull Runnable run) {
@@ -43,7 +40,8 @@ public class BukkitSyncScheduler implements SchedulerImplementation {
     }
 
     @Override
-    public @NotNull <T> TaskImplementation<T> run(@NotNull Function<TaskImplementation<T>, T> function) {
+    public @NotNull <T> TaskImplementation<T> run(
+            @NotNull Function<TaskImplementation<T>, T> function) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, false);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
         taskImplementation.setScheduledTask(runnable.runTask(plugin));
@@ -51,7 +49,8 @@ public class BukkitSyncScheduler implements SchedulerImplementation {
     }
 
     @Override
-    public @NotNull <T> TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, long delay) {
+    public @NotNull <T> TaskImplementation<T> runDelayed(
+            @NotNull Function<TaskImplementation<T>, T> function, long delay) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, false);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
         taskImplementation.setScheduledTask(runnable.runTaskLater(plugin, delay));
@@ -59,7 +58,8 @@ public class BukkitSyncScheduler implements SchedulerImplementation {
     }
 
     @Override
-    public @NotNull <T> TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, long delay, long period) {
+    public @NotNull <T> TaskImplementation<T> runAtFixedRate(
+            @NotNull Function<TaskImplementation<T>, T> function, long delay, long period) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, true);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
         taskImplementation.setScheduledTask(runnable.runTaskTimer(plugin, delay, period));

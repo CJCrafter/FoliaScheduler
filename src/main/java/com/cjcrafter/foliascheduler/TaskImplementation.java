@@ -1,10 +1,9 @@
 package com.cjcrafter.foliascheduler;
 
+import java.util.concurrent.CompletableFuture;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
 
 public interface TaskImplementation<T> {
 
@@ -15,9 +14,7 @@ public interface TaskImplementation<T> {
      */
     @NotNull Plugin getOwningPlugin();
 
-    /**
-     * Cancels this task.
-     */
+    /** Cancels this task. */
     void cancel();
 
     /**
@@ -43,19 +40,19 @@ public interface TaskImplementation<T> {
 
     /**
      * Returns the callback from this task's execution.
-     *<p>
-     * If the task has not been completed yet, this method will always return null. To check if the
-     * task has been completed, use {@link #asFuture()}.
+     *
+     * <p>If the task has not been completed yet, this method will always return null. To check if
+     * the task has been completed, use {@link #asFuture()}.
      *
      * @return The callback value from this task's execution.
      */
     @Nullable T getCallback();
 
     /**
-     * Returns a CompletableFuture that will be completed when the task has finished executing.
-     * For repeating tasks, the future will be completed on the first loop execution.
-     * <p>
-     * The future may not be completed if the task is cancelled before it is run, or if an
+     * Returns a CompletableFuture that will be completed when the task has finished executing. For
+     * repeating tasks, the future will be completed on the first loop execution.
+     *
+     * <p>The future may not be completed if the task is cancelled before it is run, or if an
      * exception occurs during execution of the task.
      *
      * @return A CompletableFuture that will be completed when the task has finished executing.

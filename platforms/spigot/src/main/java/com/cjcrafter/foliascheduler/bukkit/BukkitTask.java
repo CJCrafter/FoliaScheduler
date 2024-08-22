@@ -1,14 +1,13 @@
 package com.cjcrafter.foliascheduler.bukkit;
 
 import com.cjcrafter.foliascheduler.TaskImplementation;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
 
 @ApiStatus.Internal
 public class BukkitTask<T> implements TaskImplementation<T> {
@@ -51,7 +50,10 @@ public class BukkitTask<T> implements TaskImplementation<T> {
 
     @Override
     public boolean isRunning() {
-        return owningPlugin.getServer().getScheduler().isCurrentlyRunning(scheduledTaskRef.get().getTaskId());
+        return owningPlugin
+                .getServer()
+                .getScheduler()
+                .isCurrentlyRunning(scheduledTaskRef.get().getTaskId());
     }
 
     @Override

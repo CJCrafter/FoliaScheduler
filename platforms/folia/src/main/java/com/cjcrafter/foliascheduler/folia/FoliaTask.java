@@ -2,14 +2,13 @@ package com.cjcrafter.foliascheduler.folia;
 
 import com.cjcrafter.foliascheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
 
 @ApiStatus.Internal
 public class FoliaTask<T> implements TaskImplementation<T> {
@@ -50,7 +49,7 @@ public class FoliaTask<T> implements TaskImplementation<T> {
     public boolean isRunning() {
         ScheduledTask.ExecutionState state = scheduledTaskRef.get().getExecutionState();
         return state == ScheduledTask.ExecutionState.RUNNING
-            || state == ScheduledTask.ExecutionState.CANCELLED_RUNNING;
+                || state == ScheduledTask.ExecutionState.CANCELLED_RUNNING;
     }
 
     @Override

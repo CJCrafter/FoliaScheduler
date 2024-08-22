@@ -1,9 +1,9 @@
 package com.cjcrafter.foliascheduler.util;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 public class UpdateTest {
 
@@ -14,14 +14,16 @@ public class UpdateTest {
         assertTrue(compare < 0);
 
         // 1.13 < 1.20
-        int compare2 = MinecraftVersions.UPDATE_AQUATIC.compareTo(MinecraftVersions.TRAILS_AND_TAILS);
+        int compare2 =
+                MinecraftVersions.UPDATE_AQUATIC.compareTo(MinecraftVersions.TRAILS_AND_TAILS);
         assertTrue(compare2 < 0);
     }
 
     @Test
     public void testGreaterThan() {
         // 1.20 > 1.13
-        int compare = MinecraftVersions.TRAILS_AND_TAILS.compareTo(MinecraftVersions.UPDATE_AQUATIC);
+        int compare =
+                MinecraftVersions.TRAILS_AND_TAILS.compareTo(MinecraftVersions.UPDATE_AQUATIC);
         assertTrue(compare > 0);
 
         // 1.13 > 1.12

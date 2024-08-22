@@ -1,31 +1,29 @@
 package com.cjcrafter.foliascheduler.util;
 
-import org.bukkit.Bukkit;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Utility class to check the current Minecraft version.
- * <p>
- * Minecraft updates all follow the `major.minor.patch` format. This utility
- * separates this into two classes: {@link Update} and {@link Version}. An {@link Update} is a
- * "named" update from Minecraft, such as "1.13" ({@link #UPDATE_AQUATIC}). If you
- * need to get more specific, you can use a {@link Version} object, which is a patch
- * for an {@link Update}, such as "1.13.2".
- * <p>
- * You can get a specific {@link Version} object calling {@link Update#get(int)} with the patch
+ *
+ * <p>Minecraft updates all follow the `major.minor.patch` format. This utility separates this into
+ * two classes: {@link Update} and {@link Version}. An {@link Update} is a "named" update from
+ * Minecraft, such as "1.13" ({@link #UPDATE_AQUATIC}). If you need to get more specific, you can
+ * use a {@link Version} object, which is a patch for an {@link Update}, such as "1.13.2".
+ *
+ * <p>You can get a specific {@link Version} object calling {@link Update#get(int)} with the patch
  * number.
- * <p>
- * Note that this utility will need to be updated to access newer versions of Minecraft. If
- * this utility is used on a newer version of Minecraft, it will be parsed into an "unknown"
- * version, which will still be able to function as expected (Using {@link Version#isAtLeast()}
- * will still work, for example). However, {@link #updates()} and {@link #versions()} will not
- * contain the newer versions.
+ *
+ * <p>Note that this utility will need to be updated to access newer versions of Minecraft. If this
+ * utility is used on a newer version of Minecraft, it will be parsed into an "unknown" version,
+ * which will still be able to function as expected (Using {@link Version#isAtLeast()} will still
+ * work, for example). However, {@link #updates()} and {@link #versions()} will not contain the
+ * newer versions.
  */
 public final class MinecraftVersions {
 
@@ -53,9 +51,9 @@ public final class MinecraftVersions {
 
     /**
      * Returns an immutable map of all updates.
-     * <p>
-     * The key is the result of {@link Update#toString()}, and the value is the
-     * {@link Update} object.
+     *
+     * <p>The key is the result of {@link Update#toString()}, and the value is the {@link Update}
+     * object.
      *
      * @return An immutable map of all updates.
      */
@@ -65,9 +63,9 @@ public final class MinecraftVersions {
 
     /**
      * Returns an immutable map of all versions.
-     * <p>
-     * The key is the result of {@link Version#toString()}, and the value is the
-     * {@link Version} object.
+     *
+     * <p>The key is the result of {@link Version#toString()}, and the value is the {@link Version}
+     * object.
      *
      * @return An immutable map of all versions.
      */
@@ -108,115 +106,145 @@ public final class MinecraftVersions {
 
         // Check if the version is for a Minecraft version that we know about
         Version version = allVersions.get(major + "." + minor + "." + patch);
-        if (version != null)
-            return version;
+        if (version != null) return version;
 
         // If the version is not known, create a new "unknown" version
         return new Version(major, minor, patch, -1);
     }
 
-    /**
-     * 1.12, the colorful blocks update (concrete)
-     */
-    public static final @NotNull Update WORLD_OF_COLOR = registerUpdate(new Update(1, 12, update -> {
-        update.version(0, 1); // 1.12
-        update.version(1, 1); // 1.12.1
-        update.version(2, 1); // 1.12.2
-    }));
+    /** 1.12, the colorful blocks update (concrete) */
+    public static final @NotNull Update WORLD_OF_COLOR =
+            registerUpdate(
+                    new Update(
+                            1,
+                            12,
+                            update -> {
+                                update.version(0, 1); // 1.12
+                                update.version(1, 1); // 1.12.1
+                                update.version(2, 1); // 1.12.2
+                            }));
 
     /**
-     * 1.13, ocean update (the flattening, waterloggable blocks, sprint swimming, brigadier commands)
+     * 1.13, ocean update (the flattening, waterloggable blocks, sprint swimming, brigadier
+     * commands)
      */
-    public static final @NotNull Update UPDATE_AQUATIC = registerUpdate(new Update(1, 13, update -> {
-        update.version(0, 1); // 1.13
-        update.version(1, 2); // 1.13.1
-        update.version(2, 2); // 1.13.2
-    }));
+    public static final @NotNull Update UPDATE_AQUATIC =
+            registerUpdate(
+                    new Update(
+                            1,
+                            13,
+                            update -> {
+                                update.version(0, 1); // 1.13
+                                update.version(1, 2); // 1.13.1
+                                update.version(2, 2); // 1.13.2
+                            }));
 
-    /**
-     * 1.14, villagers update (sneaking below slabs, new village generation)
-     */
-    public static final @NotNull Update VILLAGE_AND_PILLAGE = registerUpdate(new Update(1, 14, update -> {
-        update.version(0, 1); // 1.14
-        update.version(1, 1); // 1.14.1
-        update.version(2, 1); // 1.14.2
-        update.version(3, 1); // 1.14.3
-        update.version(4, 1); // 1.14.4
-    }));
+    /** 1.14, villagers update (sneaking below slabs, new village generation) */
+    public static final @NotNull Update VILLAGE_AND_PILLAGE =
+            registerUpdate(
+                    new Update(
+                            1,
+                            14,
+                            update -> {
+                                update.version(0, 1); // 1.14
+                                update.version(1, 1); // 1.14.1
+                                update.version(2, 1); // 1.14.2
+                                update.version(3, 1); // 1.14.3
+                                update.version(4, 1); // 1.14.4
+                            }));
 
-    /**
-     * 1.15, bees update (bug fixes, bees)
-     */
-    public static final @NotNull Update BUZZY_BEES = registerUpdate(new Update(1, 15, update -> {
-        update.version(0, 1); // 1.15
-        update.version(1, 1); // 1.15.1
-        update.version(2, 1); // 1.15.2
-    }));
+    /** 1.15, bees update (bug fixes, bees) */
+    public static final @NotNull Update BUZZY_BEES =
+            registerUpdate(
+                    new Update(
+                            1,
+                            15,
+                            update -> {
+                                update.version(0, 1); // 1.15
+                                update.version(1, 1); // 1.15.1
+                                update.version(2, 1); // 1.15.2
+                            }));
 
-    /**
-     * 1.16, nether update (crimson, fungus, nether generation, biome fogs)
-     */
-    public static final @NotNull Update NETHER_UPDATE = registerUpdate(new Update(1, 16, update -> {
-        update.version(0, 1); // 1.16
-        update.version(1, 1); // 1.16.1
-        update.version(2, 2); // 1.16.2
-        update.version(3, 2); // 1.16.3
-        update.version(4, 3); // 1.16.4
-        update.version(5, 3); // 1.16.5
-    }));
+    /** 1.16, nether update (crimson, fungus, nether generation, biome fogs) */
+    public static final @NotNull Update NETHER_UPDATE =
+            registerUpdate(
+                    new Update(
+                            1,
+                            16,
+                            update -> {
+                                update.version(0, 1); // 1.16
+                                update.version(1, 1); // 1.16.1
+                                update.version(2, 2); // 1.16.2
+                                update.version(3, 2); // 1.16.3
+                                update.version(4, 3); // 1.16.4
+                                update.version(5, 3); // 1.16.5
+                            }));
 
-    /**
-     * 1.17, caves and cliffs part 1 (tuff, new mobs, new blocks)
-     */
-    public static final @NotNull Update CAVES_AND_CLIFFS_1 = registerUpdate(new Update(1, 17, update -> {
-        update.version(0, 1); // 1.17
-        update.version(1, 1); // 1.17.1
-    }));
+    /** 1.17, caves and cliffs part 1 (tuff, new mobs, new blocks) */
+    public static final @NotNull Update CAVES_AND_CLIFFS_1 =
+            registerUpdate(
+                    new Update(
+                            1,
+                            17,
+                            update -> {
+                                update.version(0, 1); // 1.17
+                                update.version(1, 1); // 1.17.1
+                            }));
 
-    /**
-     * 1.18, caves and cliffs part 2 (new generations)
-     */
-    public static final @NotNull Update CAVES_AND_CLIFFS_2 = registerUpdate(new Update(1, 18, update -> {
-        update.version(0, 1); // 1.18
-        update.version(1, 1); // 1.18.1
-        update.version(2, 2); // 1.18.2
-    }));
+    /** 1.18, caves and cliffs part 2 (new generations) */
+    public static final @NotNull Update CAVES_AND_CLIFFS_2 =
+            registerUpdate(
+                    new Update(
+                            1,
+                            18,
+                            update -> {
+                                update.version(0, 1); // 1.18
+                                update.version(1, 1); // 1.18.1
+                                update.version(2, 2); // 1.18.2
+                            }));
 
-    /**
-     * 1.19, the deep dark update (sculk, warden, mud, mangrove, etc.)
-     */
-    public static final @NotNull Update WILD_UPDATE = registerUpdate(new Update(1, 19, update -> {
-        update.version(0, 1); // 1.19
-        update.version(1, 1); // 1.19.1
-        update.version(2, 2); // 1.19.2
-        update.version(3, 3); // 1.19.3
-        update.version(4, 3); // 1.19.4
-    }));
+    /** 1.19, the deep dark update (sculk, warden, mud, mangrove, etc.) */
+    public static final @NotNull Update WILD_UPDATE =
+            registerUpdate(
+                    new Update(
+                            1,
+                            19,
+                            update -> {
+                                update.version(0, 1); // 1.19
+                                update.version(1, 1); // 1.19.1
+                                update.version(2, 2); // 1.19.2
+                                update.version(3, 3); // 1.19.3
+                                update.version(4, 3); // 1.19.4
+                            }));
 
-    /**
-     * 1.20, the archaeology update (cherry grove, sniffers, etc.)
-     */
-    public static final @NotNull Update TRAILS_AND_TAILS = registerUpdate(new Update(1, 20, update -> {
-        update.version(0, 1); // 1.20
-        update.version(1, 1); // 1.20.1
-        update.version(2, 2); // 1.20.2
-        update.version(3, 3); // 1.20.3
-        update.version(4, 3); // 1.20.4
-        update.version(5, 4); // 1.20.5
-        update.version(6, 4); // 1.20.6
-    }));
+    /** 1.20, the archaeology update (cherry grove, sniffers, etc.) */
+    public static final @NotNull Update TRAILS_AND_TAILS =
+            registerUpdate(
+                    new Update(
+                            1,
+                            20,
+                            update -> {
+                                update.version(0, 1); // 1.20
+                                update.version(1, 1); // 1.20.1
+                                update.version(2, 2); // 1.20.2
+                                update.version(3, 3); // 1.20.3
+                                update.version(4, 3); // 1.20.4
+                                update.version(5, 4); // 1.20.5
+                                update.version(6, 4); // 1.20.6
+                            }));
 
-    /**
-     * 1.21, the dungeons update (mace, potions, paintings, etc.)
-     */
-    public static final @NotNull Update TRICKY_TRIALS = registerUpdate(new Update(1, 21, update -> {
-        update.version(0, 1); // 1.21
-        update.version(1, 1); // 1.21.1
-    }));
+    /** 1.21, the dungeons update (mace, potions, paintings, etc.) */
+    public static final @NotNull Update TRICKY_TRIALS =
+            registerUpdate(
+                    new Update(
+                            1,
+                            21,
+                            update -> {
+                                update.version(0, 1); // 1.21
+                                update.version(1, 1); // 1.21.1
+                            }));
 
-    /**
-     * Represents a "big" Minecraft update, e.g., 1.13 -> 1.14
-     */
+    /** Represents a "big" Minecraft update, e.g., 1.13 -> 1.14 */
     public static class Update implements Comparable<Update> {
         private final int major;
         private final int minor;
@@ -333,7 +361,8 @@ public final class MinecraftVersions {
             try {
                 return versions.get(patch);
             } catch (IndexOutOfBoundsException e) {
-                throw new IllegalArgumentException("Unknown version: " + major + "." + minor + "." + patch);
+                throw new IllegalArgumentException(
+                        "Unknown version: " + major + "." + minor + "." + patch);
             }
         }
 
@@ -348,7 +377,9 @@ public final class MinecraftVersions {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Update update = (Update) o;
-            return major == update.major && minor == update.minor && Objects.equals(versions, update.versions);
+            return major == update.major
+                    && minor == update.minor
+                    && Objects.equals(versions, update.versions);
         }
 
         @Override
@@ -445,11 +476,10 @@ public final class MinecraftVersions {
 
         /**
          * Returns the protocol version, like R1, R2, etc.
-         * <p>
-         * If the version is "unknown" (not included in the utility), this will
-         * return -1. This happens usually because a new version of Minecraft was
-         * released after this utility was created... Be sure to keep this
-         * updated!
+         *
+         * <p>If the version is "unknown" (not included in the utility), this will return -1. This
+         * happens usually because a new version of Minecraft was released after this utility was
+         * created... Be sure to keep this updated!
          *
          * @return The protocol version.
          */

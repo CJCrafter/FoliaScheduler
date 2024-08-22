@@ -52,7 +52,8 @@ public class BukkitServer implements ServerImplementation {
     }
 
     @Override
-    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks) {
+    public boolean isOwnedByCurrentRegion(
+            @NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks) {
         return owningPlugin.getServer().isPrimaryThread();
     }
 

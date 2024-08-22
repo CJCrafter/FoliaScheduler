@@ -1,41 +1,38 @@
 package com.cjcrafter.foliascheduler;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a scheduler that can schedule tasks to be run asynchronously (separate from the server thread(s)).
+ * Represents a scheduler that can schedule tasks to be run asynchronously (separate from the server
+ * thread(s)).
  */
 public interface AsyncSchedulerImplementation {
 
-    /**
-     * Runs a task asynchronously immediately.
-     */
+    /** Runs a task asynchronously immediately. */
     <T> @NotNull TaskImplementation<T> runNow(@NotNull Function<TaskImplementation<T>, T> function);
 
-    /**
-     * Runs a task asynchronously immediately.
-     */
-    default @NotNull TaskImplementation<Void> runNow(@NotNull Consumer<TaskImplementation<Void>> consumer) {
-        Function<TaskImplementation<Void>, Void> wrapperFunction = task -> {
-            consumer.accept(task);
-            return null;
-        };
+    /** Runs a task asynchronously immediately. */
+    default @NotNull TaskImplementation<Void> runNow(
+            @NotNull Consumer<TaskImplementation<Void>> consumer) {
+        Function<TaskImplementation<Void>, Void> wrapperFunction =
+                task -> {
+                    consumer.accept(task);
+                    return null;
+                };
         return this.runNow(wrapperFunction);
     }
 
-    /**
-     * Runs a task asynchronously immediately.
-     */
+    /** Runs a task asynchronously immediately. */
     default @NotNull TaskImplementation<Void> runNow(@NotNull Runnable runnable) {
-        Function<TaskImplementation<Void>, Void> wrapperFunction = task -> {
-            runnable.run();
-            return null;
-        };
+        Function<TaskImplementation<Void>, Void> wrapperFunction =
+                task -> {
+                    runnable.run();
+                    return null;
+                };
         return this.runNow(wrapperFunction);
     }
 
@@ -48,10 +45,9 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     <T> @NotNull TaskImplementation<T> runDelayed(
-        @NotNull Function<TaskImplementation<T>, T> function,
-        long delay,
-        @NotNull TimeUnit unit
-    );
+            @NotNull Function<TaskImplementation<T>, T> function,
+            long delay,
+            @NotNull TimeUnit unit);
 
     /**
      * Schedules a task to be run asynchronously after a delay.
@@ -62,14 +58,14 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default @NotNull TaskImplementation<Void> runDelayed(
-        @NotNull Consumer<TaskImplementation<Void>> consumer,
-        long delay,
-        @NotNull TimeUnit unit
-    ) {
-        Function<TaskImplementation<Void>, Void> wrapperFunction = task -> {
-            consumer.accept(task);
-            return null;
-        };
+            @NotNull Consumer<TaskImplementation<Void>> consumer,
+            long delay,
+            @NotNull TimeUnit unit) {
+        Function<TaskImplementation<Void>, Void> wrapperFunction =
+                task -> {
+                    consumer.accept(task);
+                    return null;
+                };
         return this.runDelayed(wrapperFunction, delay, unit);
     }
 
@@ -82,14 +78,12 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default @NotNull TaskImplementation<Void> runDelayed(
-        @NotNull Runnable runnable,
-        long delay,
-        @NotNull TimeUnit unit
-    ) {
-        Function<TaskImplementation<Void>, Void> wrapperFunction = task -> {
-            runnable.run();
-            return null;
-        };
+            @NotNull Runnable runnable, long delay, @NotNull TimeUnit unit) {
+        Function<TaskImplementation<Void>, Void> wrapperFunction =
+                task -> {
+                    runnable.run();
+                    return null;
+                };
         return this.runDelayed(wrapperFunction, delay, unit);
     }
 
@@ -101,10 +95,9 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default <T> @NotNull TaskImplementation<T> runDelayed(
-        @NotNull Function<TaskImplementation<T>, @Nullable T> function,
-        long ticks
-    ) {
-        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay to milliseconds
+            @NotNull Function<TaskImplementation<T>, @Nullable T> function, long ticks) {
+        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay
+        // to milliseconds
         return runDelayed(function, ticks * 50, TimeUnit.MILLISECONDS);
     }
 
@@ -116,10 +109,9 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default @NotNull TaskImplementation<Void> runDelayed(
-        @NotNull Consumer<TaskImplementation<Void>> consumer,
-        long ticks
-    ) {
-        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay to milliseconds
+            @NotNull Consumer<TaskImplementation<Void>> consumer, long ticks) {
+        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay
+        // to milliseconds
         return runDelayed(consumer, ticks * 50, TimeUnit.MILLISECONDS);
     }
 
@@ -130,11 +122,9 @@ public interface AsyncSchedulerImplementation {
      * @param ticks The delay in ticks before the task is run.
      * @return The task that was scheduled.
      */
-    default @NotNull TaskImplementation<Void> runDelayed(
-        @NotNull Runnable runnable,
-        long ticks
-    ) {
-        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay to milliseconds
+    default @NotNull TaskImplementation<Void> runDelayed(@NotNull Runnable runnable, long ticks) {
+        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay
+        // to milliseconds
         return runDelayed(runnable, ticks * 50, TimeUnit.MILLISECONDS);
     }
 
@@ -148,11 +138,10 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     <T> @NotNull TaskImplementation<T> runAtFixedRate(
-        @NotNull Function<TaskImplementation<T>, T> function,
-        long delay,
-        long period,
-        @NotNull TimeUnit unit
-    );
+            @NotNull Function<TaskImplementation<T>, T> function,
+            long delay,
+            long period,
+            @NotNull TimeUnit unit);
 
     /**
      * Schedules a task to be run asynchronously after a delay and then repeatedly after a period.
@@ -164,15 +153,15 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default @NotNull TaskImplementation<Void> runAtFixedRate(
-        @NotNull Consumer<TaskImplementation<Void>> consumer,
-        long delay,
-        long period,
-        @NotNull TimeUnit unit
-    ) {
-        Function<TaskImplementation<Void>, Void> wrapperFunction = task -> {
-            consumer.accept(task);
-            return null;
-        };
+            @NotNull Consumer<TaskImplementation<Void>> consumer,
+            long delay,
+            long period,
+            @NotNull TimeUnit unit) {
+        Function<TaskImplementation<Void>, Void> wrapperFunction =
+                task -> {
+                    consumer.accept(task);
+                    return null;
+                };
         return this.runAtFixedRate(wrapperFunction, delay, period, unit);
     }
 
@@ -186,20 +175,18 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default @NotNull TaskImplementation<Void> runAtFixedRate(
-        @NotNull Runnable runnable,
-        long delay,
-        long period,
-        @NotNull TimeUnit unit
-    ) {
-        Function<TaskImplementation<Void>, Void> wrapperFunction = task -> {
-            runnable.run();
-            return null;
-        };
+            @NotNull Runnable runnable, long delay, long period, @NotNull TimeUnit unit) {
+        Function<TaskImplementation<Void>, Void> wrapperFunction =
+                task -> {
+                    runnable.run();
+                    return null;
+                };
         return this.runAtFixedRate(wrapperFunction, delay, period, unit);
     }
 
     /**
-     * Schedules a task to be run asynchronously after a delay and then repeatedly after a period, in ticks.
+     * Schedules a task to be run asynchronously after a delay and then repeatedly after a period,
+     * in ticks.
      *
      * @param function The task to run.
      * @param delay The delay in ticks before the task is run.
@@ -207,16 +194,17 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default <T> @NotNull TaskImplementation<T> runAtFixedRate(
-        @NotNull Function<TaskImplementation<T>, @Nullable T> function,
-        long delay,
-        long ticks
-    ) {
-        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay to milliseconds
+            @NotNull Function<TaskImplementation<T>, @Nullable T> function,
+            long delay,
+            long ticks) {
+        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay
+        // to milliseconds
         return runAtFixedRate(function, delay * 50, ticks * 50, TimeUnit.MILLISECONDS);
     }
 
     /**
-     * Schedules a task to be run asynchronously after a delay and then repeatedly after a period, in ticks.
+     * Schedules a task to be run asynchronously after a delay and then repeatedly after a period,
+     * in ticks.
      *
      * @param consumer The task to run.
      * @param delay The delay in ticks before the task is run.
@@ -224,16 +212,15 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default @NotNull TaskImplementation<Void> runAtFixedRate(
-        @NotNull Consumer<TaskImplementation<Void>> consumer,
-        long delay,
-        long ticks
-    ) {
-        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay to milliseconds
+            @NotNull Consumer<TaskImplementation<Void>> consumer, long delay, long ticks) {
+        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay
+        // to milliseconds
         return runAtFixedRate(consumer, delay * 50, ticks * 50, TimeUnit.MILLISECONDS);
     }
 
     /**
-     * Schedules a task to be run asynchronously after a delay and then repeatedly after a period, in ticks.
+     * Schedules a task to be run asynchronously after a delay and then repeatedly after a period,
+     * in ticks.
      *
      * @param runnable The task to run.
      * @param delay The delay in ticks before the task is run.
@@ -241,11 +228,9 @@ public interface AsyncSchedulerImplementation {
      * @return The task that was scheduled.
      */
     default @NotNull TaskImplementation<Void> runAtFixedRate(
-        @NotNull Runnable runnable,
-        long delay,
-        long ticks
-    ) {
-        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay to milliseconds
+            @NotNull Runnable runnable, long delay, long ticks) {
+        // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay
+        // to milliseconds
         return runAtFixedRate(runnable, delay * 50, ticks * 50, TimeUnit.MILLISECONDS);
     }
 }

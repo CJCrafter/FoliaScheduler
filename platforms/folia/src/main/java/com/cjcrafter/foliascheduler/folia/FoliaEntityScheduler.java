@@ -4,14 +4,13 @@ import com.cjcrafter.foliascheduler.EntitySchedulerImplementation;
 import com.cjcrafter.foliascheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 @ApiStatus.Internal
 public class FoliaEntityScheduler implements EntitySchedulerImplementation {
@@ -26,9 +25,8 @@ public class FoliaEntityScheduler implements EntitySchedulerImplementation {
     }
 
     private <T> @NotNull Consumer<ScheduledTask> buildFoliaConsumer(
-        @NotNull FoliaTask<T> taskImplementation,
-        @NotNull Function<TaskImplementation<T>, T> callbackFunction
-    ) {
+            @NotNull FoliaTask<T> taskImplementation,
+            @NotNull Function<TaskImplementation<T>, T> callbackFunction) {
         return scheduledTask -> {
             taskImplementation.setScheduledTask(scheduledTask);
             taskImplementation.setCallback(callbackFunction.apply(taskImplementation));
@@ -42,42 +40,49 @@ public class FoliaEntityScheduler implements EntitySchedulerImplementation {
     }
 
     @Override
-    public @Nullable <T> TaskImplementation<T> run(@NotNull Function<TaskImplementation<T>, T> function, @Nullable Runnable retired) {
+    public @Nullable <T> TaskImplementation<T> run(
+            @NotNull Function<TaskImplementation<T>, T> function, @Nullable Runnable retired) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
         ScheduledTask scheduledTask = entityScheduler.run(plugin, foliaConsumer, retired);
 
         // Happens when entity is not valid, check Entity#isValid()
-        if (scheduledTask == null)
-            return null;
+        if (scheduledTask == null) return null;
 
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
     }
 
     @Override
-    public @Nullable <T> TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, @Nullable Runnable retired, long delay) {
+    public @Nullable <T> TaskImplementation<T> runDelayed(
+            @NotNull Function<TaskImplementation<T>, T> function,
+            @Nullable Runnable retired,
+            long delay) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
-        ScheduledTask scheduledTask = entityScheduler.runDelayed(plugin, foliaConsumer, retired, delay);
+        ScheduledTask scheduledTask =
+                entityScheduler.runDelayed(plugin, foliaConsumer, retired, delay);
 
         // Happens when entity is not valid, check Entity#isValid()
-        if (scheduledTask == null)
-            return null;
+        if (scheduledTask == null) return null;
 
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
     }
 
     @Override
-    public @Nullable <T> TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, @Nullable Runnable retired, long delay, long period) {
+    public @Nullable <T> TaskImplementation<T> runAtFixedRate(
+            @NotNull Function<TaskImplementation<T>, T> function,
+            @Nullable Runnable retired,
+            long delay,
+            long period) {
         FoliaTask<T> taskImplementation = new FoliaTask<>();
         Consumer<ScheduledTask> foliaConsumer = buildFoliaConsumer(taskImplementation, function);
-        ScheduledTask scheduledTask = entityScheduler.runAtFixedRate(plugin, foliaConsumer, retired, delay, period);
+        ScheduledTask scheduledTask =
+                entityScheduler.runAtFixedRate(plugin, foliaConsumer, retired, delay, period);
 
         // Happens when entity is not valid, check Entity#isValid()
-        if (scheduledTask == null)
-            return null;
+        if (scheduledTask == null) return null;
 
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;

@@ -1,8 +1,6 @@
 package com.cjcrafter.foliascheduler.util;
 
-/**
- * Utility class to determine the fork type of the server.
- */
+/** Utility class to determine the fork type of the server. */
 public final class ServerVersions {
 
     private static Boolean isPaper = null;
@@ -31,9 +29,9 @@ public final class ServerVersions {
 
     /**
      * Returns <code>true</code> if the server is running a version of Folia, or any fork of Folia.
-     * <p>
-     * Note that when {@link #isFolia} returns true, {@link #isPaper} will also return true, since
-     * Folia is a fork of Paper.
+     *
+     * <p>Note that when {@link #isFolia} returns true, {@link #isPaper} will also return true,
+     * since Folia is a fork of Paper.
      *
      * @return Whether the server is running a version of Folia
      */
