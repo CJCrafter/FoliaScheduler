@@ -69,7 +69,7 @@ public final class ReflectionUtil {
      */
     public static <T> @NotNull Class<T> getClass(@NotNull String className) {
         // In Paper 1.20.5+, Paper remaps the server to Mojang mappings
-        if (MinecraftVersions.TRAILS_AND_TAILS.get(5).isAtLeast() && ServerVersions.isPaper()) {
+        if (ServerVersions.isPaper() && MinecraftVersions.TRAILS_AND_TAILS.get(5).isAtLeast()) {
             ReflectionRemapper remapper = ReflectionRemapper.forReobfMappingsInPaperJar();
             className = remapper.remapClassOrArrayName(className);
         }
@@ -133,7 +133,7 @@ public final class ReflectionUtil {
     public static @NotNull FieldAccessor getField(@NotNull Class<?> clazz, @NotNull String fieldName) {
         try {
             // In Paper 1.20.5+, Paper remaps the server to Mojang mappings
-            if (MinecraftVersions.TRAILS_AND_TAILS.get(5).isAtLeast() && ServerVersions.isPaper()) {
+            if (ServerVersions.isPaper() && MinecraftVersions.TRAILS_AND_TAILS.get(5).isAtLeast()) {
                 ReflectionRemapper remapper = ReflectionRemapper.forReobfMappingsInPaperJar();
                 fieldName = remapper.remapFieldName(clazz, fieldName);
             }
@@ -214,7 +214,7 @@ public final class ReflectionUtil {
     public static @NotNull MethodInvoker getMethod(@NotNull Class<?> clazz, @NotNull String methodName, Class<?>... parameterTypes) {
         try {
             // In Paper 1.20.5+, Paper remaps the server to Mojang mappings
-            if (MinecraftVersions.TRAILS_AND_TAILS.get(5).isAtLeast() && ServerVersions.isPaper()) {
+            if (ServerVersions.isPaper() && MinecraftVersions.TRAILS_AND_TAILS.get(5).isAtLeast()) {
                 ReflectionRemapper remapper = ReflectionRemapper.forReobfMappingsInPaperJar();
                 methodName = remapper.remapMethodName(clazz, methodName);
             }
