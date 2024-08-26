@@ -28,13 +28,29 @@ import java.util.function.Predicate;
 public final class ReflectionUtil {
 
     // These predicates can be used in #getField and #getMethod to filter fields more precisely
+    public static final @NotNull Predicate<Member> IS_PUBLIC = (member) -> Modifier.isPublic(member.getModifiers());
+    public static final @NotNull Predicate<Member> IS_NOT_PUBLIC = IS_PUBLIC.negate();
+    public static final @NotNull Predicate<Member> IS_PRIVATE = (member) -> Modifier.isPrivate(member.getModifiers());
+    public static final @NotNull Predicate<Member> IS_NOT_PRIVATE = IS_PRIVATE.negate();
     public static final @NotNull Predicate<Member> IS_STATIC = (member) -> Modifier.isStatic(member.getModifiers());
-    public static final @NotNull Predicate<Member> IS_NON_STATIC = IS_STATIC.negate();
+    public static final @NotNull Predicate<Member> IS_NOT_STATIC = IS_STATIC.negate();
     public static final @NotNull Predicate<Member> IS_FINAL = (member) -> Modifier.isFinal(member.getModifiers());
-    public static final @NotNull Predicate<Member> IS_NON_FINAL = IS_FINAL.negate();
+    public static final @NotNull Predicate<Member> IS_NOT_FINAL = IS_FINAL.negate();
 
     private ReflectionUtil() {
         throw new UnsupportedOperationException("This class cannot be instantiated");
+    }
+
+    private static @NotNull Field makeFieldAccessible(@NotNull Field field) {
+        if (!field.isAccessible())
+            field.setAccessible(true);
+        return field;
+    }
+
+    private static @NotNull Method makeMethodAccessible(@NotNull Method method) {
+        if (!method.isAccessible())
+            method.setAccessible(true);
+        return method;
     }
 
     /**
@@ -121,7 +137,7 @@ public final class ReflectionUtil {
                 ReflectionRemapper remapper = ReflectionRemapper.forReobfMappingsInPaperJar();
                 fieldName = remapper.remapFieldName(clazz, fieldName);
             }
-            return new FieldAccessor(clazz.getDeclaredField(fieldName));
+            return new FieldAccessor(makeFieldAccessible(clazz.getDeclaredField(fieldName)));
         } catch (ReflectiveOperationException e) {
             throw new WrappedReflectiveOperationException(e);
         }
@@ -177,7 +193,7 @@ public final class ReflectionUtil {
             if (index-- > 0)
                 continue;
 
-            return new FieldAccessor(field);
+            return new FieldAccessor(makeFieldAccessible(field));
         }
 
         // If no field was found, recursively check super class
@@ -202,7 +218,7 @@ public final class ReflectionUtil {
                 ReflectionRemapper remapper = ReflectionRemapper.forReobfMappingsInPaperJar();
                 methodName = remapper.remapMethodName(clazz, methodName);
             }
-            return new MethodInvoker(clazz.getDeclaredMethod(methodName, parameterTypes));
+            return new MethodInvoker(makeMethodAccessible(clazz.getDeclaredMethod(methodName, parameterTypes)));
         } catch (ReflectiveOperationException e) {
             throw new WrappedReflectiveOperationException(e);
         }
@@ -274,7 +290,7 @@ public final class ReflectionUtil {
             if (index-- > 0)
                 continue;
 
-            return new MethodInvoker(method);
+            return new MethodInvoker(makeMethodAccessible(method));
         }
 
         // If no method was found, recursively check super class
