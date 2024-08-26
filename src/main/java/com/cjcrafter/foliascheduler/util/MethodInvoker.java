@@ -57,11 +57,11 @@ public class MethodInvoker {
      * @param obj the object the underlying method is invoked from
      * @param args the arguments used for the method call
      * @return the result of dispatching the method represented by this object on {@code obj} with parameters {@code args}
-     * @throws RuntimeException if this {@code Method} object is enforcing Java language access control and the underlying method is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Method} object is enforcing Java language access control and the underlying method is inaccessible.
      * @throws IllegalArgumentException if the method is an instance method and the specified object argument is not an instance of the class or interface declaring the underlying method (or of a subclass
      * or implementor thereof); if the number of actual and formal parameters differ; if an unwrapping conversion for primitive arguments fails; or if, after possible unwrapping, a parameter value cannot
      * be converted to the corresponding formal parameter type by a method invocation conversion.
-     * @throws RuntimeException if the underlying method throws an exception.
+     * @throws WrappedReflectiveOperationException if the underlying method throws an exception.
      * @throws NullPointerException if the specified object is null and the method is an instance method.
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      */
@@ -70,7 +70,7 @@ public class MethodInvoker {
         try {
             return method.invoke(obj, args);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 }

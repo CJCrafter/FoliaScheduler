@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
  *
  * <p>This class provides methods to access the value of a field, set the value of a field without
  * requiring a try-catch block. Any {@link IllegalAccessException} is caught and rethrown as a
- * {@link RuntimeException}.
+ * {@link WrappedReflectiveOperationException}.
  */
 public class FieldAccessor {
 
@@ -35,7 +35,7 @@ public class FieldAccessor {
      *
      * @param obj the object to extract the {@code boolean} value from
      * @return the value of the {@code boolean} field
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if the field value
      * cannot be converted to the type {@code boolean} by a widening conversion.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -47,7 +47,7 @@ public class FieldAccessor {
         try {
             return field.getBoolean(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -75,7 +75,7 @@ public class FieldAccessor {
      *
      * @param obj object from which the represented field's value is to be extracted
      * @return the value of the represented field in object {@code obj}; primitive values are wrapped in an appropriate object before being returned
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof).
      * @throws NullPointerException if the specified object is null and the field is an instance field.
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
@@ -85,7 +85,7 @@ public class FieldAccessor {
         try {
             return field.get(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -126,7 +126,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param value the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -137,7 +137,7 @@ public class FieldAccessor {
         try {
             field.set(obj, value);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -147,7 +147,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param f the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -159,7 +159,7 @@ public class FieldAccessor {
         try {
             field.setFloat(obj, f);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -168,7 +168,7 @@ public class FieldAccessor {
      *
      * @param obj the object to extract the {@code byte} value from
      * @return the value of the {@code byte} field
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if the field value
      * cannot be converted to the type {@code byte} by a widening conversion.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -180,7 +180,7 @@ public class FieldAccessor {
         try {
             return field.getByte(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -190,7 +190,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param z the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -202,7 +202,7 @@ public class FieldAccessor {
         try {
             field.setBoolean(obj, z);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -211,7 +211,7 @@ public class FieldAccessor {
      *
      * @param obj the object to extract the {@code char} value from
      * @return the value of the field converted to type {@code char}
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if the field value
      * cannot be converted to the type {@code char} by a widening conversion.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -223,7 +223,7 @@ public class FieldAccessor {
         try {
             return field.getChar(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -233,7 +233,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param d the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -245,7 +245,7 @@ public class FieldAccessor {
         try {
             field.setDouble(obj, d);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -255,7 +255,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param b the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -267,7 +267,7 @@ public class FieldAccessor {
         try {
             field.setByte(obj, b);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -276,7 +276,7 @@ public class FieldAccessor {
      *
      * @param obj the object to extract the {@code short} value from
      * @return the value of the field converted to type {@code short}
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if the field value
      * cannot be converted to the type {@code short} by a widening conversion.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -288,7 +288,7 @@ public class FieldAccessor {
         try {
             return field.getShort(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -298,7 +298,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param c the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -310,7 +310,7 @@ public class FieldAccessor {
         try {
             field.setChar(obj, c);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -319,7 +319,7 @@ public class FieldAccessor {
      *
      * @param obj the object to extract the {@code int} value from
      * @return the value of the field converted to type {@code int}
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if the field value
      * cannot be converted to the type {@code int} by a widening conversion.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -331,7 +331,7 @@ public class FieldAccessor {
         try {
             return field.getInt(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -340,7 +340,7 @@ public class FieldAccessor {
      *
      * @param obj the object to extract the {@code long} value from
      * @return the value of the field converted to type {@code long}
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if the field value
      * cannot be converted to the type {@code long} by a widening conversion.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -352,7 +352,7 @@ public class FieldAccessor {
         try {
             return field.getLong(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -362,7 +362,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param s the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -374,7 +374,7 @@ public class FieldAccessor {
         try {
             field.setShort(obj, s);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -384,7 +384,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param i the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -396,7 +396,7 @@ public class FieldAccessor {
         try {
             field.setInt(obj, i);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -405,7 +405,7 @@ public class FieldAccessor {
      *
      * @param obj the object to extract the {@code float} value from
      * @return the value of the field converted to type {@code float}
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if the field value
      * cannot be converted to the type {@code float} by a widening conversion.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -417,7 +417,7 @@ public class FieldAccessor {
         try {
             return field.getFloat(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -426,7 +426,7 @@ public class FieldAccessor {
      *
      * @param obj the object to extract the {@code double} value from
      * @return the value of the field converted to type {@code double}
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is inaccessible.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if the field value
      * cannot be converted to the type {@code double} by a widening conversion.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -438,7 +438,7 @@ public class FieldAccessor {
         try {
             return field.getDouble(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 
@@ -448,7 +448,7 @@ public class FieldAccessor {
      *
      * @param obj the object whose field should be modified
      * @param l the new value for the field of {@code obj} being modified
-     * @throws RuntimeException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
+     * @throws WrappedReflectiveOperationException if this {@code Field} object is enforcing Java language access control and the underlying field is either inaccessible or final.
      * @throws IllegalArgumentException if the specified object is not an instance of the class or interface declaring the underlying field (or a subclass or implementor thereof), or if an unwrapping
      * conversion fails.
      * @throws NullPointerException if the specified object is null and the field is an instance field.
@@ -460,7 +460,7 @@ public class FieldAccessor {
         try {
             field.setLong(obj, l);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new WrappedReflectiveOperationException(e);
         }
     }
 }
