@@ -81,6 +81,6 @@ public class BukkitTask<T> implements TaskImplementation<T> {
 
     @Override
     public @NotNull CompletableFuture<TaskImplementation<T>> asFuture() {
-        return null;
+        return future;
     }
 }
