@@ -2,6 +2,7 @@ plugins {
     `java-library`
     `maven-publish`
     signing
+    id("com.gradleup.shadow") version "8.3.2"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
