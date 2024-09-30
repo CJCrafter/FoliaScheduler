@@ -74,7 +74,8 @@ public interface ServerImplementation {
      * specific region. This is useful for tasks that don't need to be run in a specific region. On Paper/Spigot, all
      * tasks are run in the main thread.
      */
-    @NotNull SchedulerImplementation global();
+    @NotNull
+    GlobalSchedulerImplementation global();
 
     /**
      * Returns the async scheduler. On all servers, this will run tasks asynchronously, separate from the server
@@ -92,13 +93,14 @@ public interface ServerImplementation {
      * Returns a region scheduler. On Folia, this will run tasks in the specified region. On Paper/Spigot, this will run
      * tasks in the main thread.
      */
-    @NotNull SchedulerImplementation region(@NotNull World world, int chunkX, int chunkZ);
+    @NotNull
+    RegionSchedulerImplementation region(@NotNull World world, int chunkX, int chunkZ);
 
     /**
      * Returns a region scheduler. On Folia, this will run tasks in the specified region. On Paper/Spigot, this will run
      * tasks in the main thread.
      */
-    default @NotNull SchedulerImplementation region(@NotNull Location location) {
+    default @NotNull RegionSchedulerImplementation region(@NotNull Location location) {
         World world = location.getWorld();
         if (world == null) {
             throw new IllegalArgumentException("Location world cannot be null");
@@ -110,7 +112,7 @@ public interface ServerImplementation {
      * Returns a region scheduler. On Folia, this will run tasks in the specified region. On Paper/Spigot, this will run
      * tasks in the main thread.
      */
-    default @NotNull SchedulerImplementation region(@NotNull Block block) {
+    default @NotNull RegionSchedulerImplementation region(@NotNull Block block) {
         return region(block.getWorld(), block.getX() >> 4, block.getZ() >> 4);
     }
 
@@ -118,7 +120,23 @@ public interface ServerImplementation {
      * Returns a region scheduler. On Folia, this will run tasks in the specified region. On Paper/Spigot, this will run
      * tasks in the main thread.
      */
-    default @NotNull SchedulerImplementation region(@NotNull Chunk chunk) {
+    default @NotNull RegionSchedulerImplementation region(@NotNull Chunk chunk) {
         return region(chunk.getWorld(), chunk.getX(), chunk.getZ());
     }
+
+    /**
+     * Cancels all scheduled tasks that were scheduled using your {@link Plugin}
+     * instance.
+     *
+     * <p>Note that Folia implementations will only cancel tasks scheduled using
+     * the {@link GlobalSchedulerImplementation} and
+     * {@link AsyncSchedulerImplementation}, ignoring any tasks scheduled using
+     * the {@link EntitySchedulerImplementation} and
+     * {@link RegionSchedulerImplementation}.
+     *
+     * @see AsyncSchedulerImplementation#cancelTasks()
+     * @see GlobalSchedulerImplementation#cancelTasks()
+     * @see <a href="https://github.com/CJCrafter/FoliaScheduler/issues/28">Issue #28</a>
+     */
+    void cancelTasks();
 }

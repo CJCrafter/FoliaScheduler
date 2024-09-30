@@ -1,5 +1,6 @@
 package com.cjcrafter.foliascheduler;
 
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -8,7 +9,7 @@ import java.util.function.Function;
 /**
  * Represents a scheduler that can schedule tasks to be run.
  */
-public interface SchedulerImplementation {
+public interface GlobalSchedulerImplementation {
 
     /**
      * Schedules a task to be run.
@@ -153,4 +154,18 @@ public interface SchedulerImplementation {
         };
         return runAtFixedRate(wrapperFunction, delay, period);
     }
+
+    /**
+     * Cancels all scheduled global tasks that were scheduled using your
+     * {@link Plugin} instance.
+     *
+     * <p>Note that the behavior of this method changes depending on the
+     * server implementation. For example, in Spigot, this method will cancel
+     * all tasks (sync + async) scheduled by the plugin, while in Paper/Folia,
+     * this method will only cancel tasks scheduled using the global scheduler.
+     *
+     * @see AsyncSchedulerImplementation#cancelTasks()
+     * @see <a href="https://github.com/CJCrafter/FoliaScheduler/issues/28">Issue #28</a>
+     */
+    void cancelTasks();
 }

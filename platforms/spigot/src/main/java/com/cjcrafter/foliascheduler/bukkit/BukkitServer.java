@@ -2,7 +2,8 @@ package com.cjcrafter.foliascheduler.bukkit;
 
 import com.cjcrafter.foliascheduler.AsyncSchedulerImplementation;
 import com.cjcrafter.foliascheduler.EntitySchedulerImplementation;
-import com.cjcrafter.foliascheduler.SchedulerImplementation;
+import com.cjcrafter.foliascheduler.GlobalSchedulerImplementation;
+import com.cjcrafter.foliascheduler.RegionSchedulerImplementation;
 import com.cjcrafter.foliascheduler.ServerImplementation;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,12 +18,14 @@ public class BukkitServer implements ServerImplementation {
 
     private final @NotNull Plugin owningPlugin;
     private final @NotNull BukkitSyncScheduler sync;
+    private final @NotNull BukkitRegionScheduler region;
     private final @NotNull BukkitAsyncScheduler async;
 
     @ApiStatus.Internal
     public BukkitServer(@NotNull Plugin owningPlugin) {
         this.owningPlugin = owningPlugin;
         this.sync = new BukkitSyncScheduler(owningPlugin);
+        this.region = new BukkitRegionScheduler(owningPlugin);
         this.async = new BukkitAsyncScheduler(owningPlugin);
     }
 
@@ -62,7 +65,7 @@ public class BukkitServer implements ServerImplementation {
     }
 
     @Override
-    public @NotNull SchedulerImplementation global() {
+    public @NotNull GlobalSchedulerImplementation global() {
         return sync;
     }
 
@@ -77,7 +80,12 @@ public class BukkitServer implements ServerImplementation {
     }
 
     @Override
-    public @NotNull SchedulerImplementation region(@NotNull World world, int chunkX, int chunkZ) {
-        return sync;
+    public @NotNull RegionSchedulerImplementation region(@NotNull World world, int chunkX, int chunkZ) {
+        return region;
+    }
+
+    @Override
+    public void cancelTasks() {
+        owningPlugin.getServer().getScheduler().cancelTasks(owningPlugin);
     }
 }

@@ -2,7 +2,8 @@ package com.cjcrafter.foliascheduler.folia;
 
 import com.cjcrafter.foliascheduler.AsyncSchedulerImplementation;
 import com.cjcrafter.foliascheduler.EntitySchedulerImplementation;
-import com.cjcrafter.foliascheduler.SchedulerImplementation;
+import com.cjcrafter.foliascheduler.GlobalSchedulerImplementation;
+import com.cjcrafter.foliascheduler.RegionSchedulerImplementation;
 import com.cjcrafter.foliascheduler.ServerImplementation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -63,7 +64,7 @@ public class FoliaServer implements ServerImplementation {
     }
 
     @Override
-    public @NotNull SchedulerImplementation global() {
+    public @NotNull GlobalSchedulerImplementation global() {
         return globalScheduler;
     }
 
@@ -78,7 +79,13 @@ public class FoliaServer implements ServerImplementation {
     }
 
     @Override
-    public @NotNull SchedulerImplementation region(@NotNull World world, int chunkX, int chunkZ) {
+    public @NotNull RegionSchedulerImplementation region(@NotNull World world, int chunkX, int chunkZ) {
         return new FoliaRegionScheduler(owningPlugin, world, chunkX, chunkZ);
+    }
+
+    @Override
+    public void cancelTasks() {
+        globalScheduler.cancelTasks();
+        asyncScheduler.cancelTasks();
     }
 }
