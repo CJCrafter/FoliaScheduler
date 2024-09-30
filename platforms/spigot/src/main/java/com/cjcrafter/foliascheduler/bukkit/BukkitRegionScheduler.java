@@ -1,21 +1,18 @@
 package com.cjcrafter.foliascheduler.bukkit;
 
-import com.cjcrafter.foliascheduler.AsyncSchedulerImplementation;
+import com.cjcrafter.foliascheduler.RegionSchedulerImplementation;
 import com.cjcrafter.foliascheduler.TaskImplementation;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-@ApiStatus.Internal
-public class BukkitAsyncScheduler implements AsyncSchedulerImplementation {
+public class BukkitRegionScheduler implements RegionSchedulerImplementation {
 
     private final @NotNull Plugin plugin;
 
-    public BukkitAsyncScheduler(@NotNull Plugin plugin) {
+    public BukkitRegionScheduler(@NotNull Plugin plugin) {
         this.plugin = plugin;
     }
 
@@ -32,32 +29,38 @@ public class BukkitAsyncScheduler implements AsyncSchedulerImplementation {
         };
     }
 
+
     @Override
-    public @NotNull <T> TaskImplementation<T> runNow(@NotNull Function<TaskImplementation<T>, T> function) {
+    public void execute(@NotNull Runnable run) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                run.run();
+            }
+        }.runTask(plugin);
+    }
+
+    @Override
+    public @NotNull <T> TaskImplementation<T> run(@NotNull Function<TaskImplementation<T>, T> function) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, false);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
-        taskImplementation.setScheduledTask(runnable.runTaskAsynchronously(plugin));
+        taskImplementation.setScheduledTask(runnable.runTask(plugin));
         return taskImplementation;
     }
 
     @Override
-    public @NotNull <T> TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, long delay, @NotNull TimeUnit unit) {
+    public @NotNull <T> TaskImplementation<T> runDelayed(@NotNull Function<TaskImplementation<T>, T> function, long delay) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, false);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
-        taskImplementation.setScheduledTask(runnable.runTaskLaterAsynchronously(plugin, unit.toSeconds(delay) * 20));
+        taskImplementation.setScheduledTask(runnable.runTaskLater(plugin, delay));
         return taskImplementation;
     }
 
     @Override
-    public @NotNull <T> TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, long delay, long period, @NotNull TimeUnit unit) {
+    public @NotNull <T> TaskImplementation<T> runAtFixedRate(@NotNull Function<TaskImplementation<T>, T> function, long delay, long period) {
         BukkitTask<T> taskImplementation = new BukkitTask<>(plugin, true);
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
-        taskImplementation.setScheduledTask(runnable.runTaskTimerAsynchronously(plugin, unit.toSeconds(delay) * 20, unit.toSeconds(period) * 20));
+        taskImplementation.setScheduledTask(runnable.runTaskTimer(plugin, delay, period));
         return taskImplementation;
-    }
-
-    @Override
-    public void cancelTasks() {
-        plugin.getServer().getScheduler().cancelTasks(plugin);
     }
 }

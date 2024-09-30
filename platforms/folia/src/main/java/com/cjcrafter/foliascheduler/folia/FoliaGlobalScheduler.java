@@ -1,6 +1,6 @@
 package com.cjcrafter.foliascheduler.folia;
 
-import com.cjcrafter.foliascheduler.SchedulerImplementation;
+import com.cjcrafter.foliascheduler.GlobalSchedulerImplementation;
 import com.cjcrafter.foliascheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @ApiStatus.Internal
-public class FoliaGlobalScheduler implements SchedulerImplementation {
+public class FoliaGlobalScheduler implements GlobalSchedulerImplementation {
 
     private final @NotNull Plugin plugin;
     private final @NotNull GlobalRegionScheduler globalRegionScheduler;
@@ -64,5 +64,10 @@ public class FoliaGlobalScheduler implements SchedulerImplementation {
         ScheduledTask scheduledTask = globalRegionScheduler.runAtFixedRate(plugin, foliaConsumer, delay, period);
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
+    }
+
+    @Override
+    public void cancelTasks() {
+        globalRegionScheduler.cancelTasks(plugin);
     }
 }
