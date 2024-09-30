@@ -1,6 +1,5 @@
 package com.cjcrafter.foliascheduler.folia;
 
-
 import com.cjcrafter.foliascheduler.AsyncSchedulerImplementation;
 import com.cjcrafter.foliascheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
@@ -61,5 +60,10 @@ public class FoliaAsyncScheduler implements AsyncSchedulerImplementation {
         ScheduledTask scheduledTask = asyncScheduler.runAtFixedRate(plugin, foliaConsumer, delay, period, unit);
         taskImplementation.setScheduledTask(scheduledTask);
         return taskImplementation;
+    }
+
+    @Override
+    public void cancelTasks() {
+        asyncScheduler.cancelTasks(plugin);
     }
 }

@@ -1,6 +1,6 @@
 package com.cjcrafter.foliascheduler.bukkit;
 
-import com.cjcrafter.foliascheduler.SchedulerImplementation;
+import com.cjcrafter.foliascheduler.GlobalSchedulerImplementation;
 import com.cjcrafter.foliascheduler.TaskImplementation;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Function;
 
 @ApiStatus.Internal
-public class BukkitSyncScheduler implements SchedulerImplementation {
+public class BukkitSyncScheduler implements GlobalSchedulerImplementation {
 
     private final @NotNull Plugin plugin;
 
@@ -30,7 +30,6 @@ public class BukkitSyncScheduler implements SchedulerImplementation {
             }
         };
     }
-
 
     @Override
     public void execute(@NotNull Runnable run) {
@@ -64,5 +63,10 @@ public class BukkitSyncScheduler implements SchedulerImplementation {
         BukkitRunnable runnable = buildBukkitRunnable(function, taskImplementation);
         taskImplementation.setScheduledTask(runnable.runTaskTimer(plugin, delay, period));
         return taskImplementation;
+    }
+
+    @Override
+    public void cancelTasks() {
+        plugin.getServer().getScheduler().cancelTasks(plugin);
     }
 }

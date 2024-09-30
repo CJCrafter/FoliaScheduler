@@ -1,6 +1,6 @@
 package com.cjcrafter.foliascheduler.folia;
 
-import com.cjcrafter.foliascheduler.SchedulerImplementation;
+import com.cjcrafter.foliascheduler.RegionSchedulerImplementation;
 import com.cjcrafter.foliascheduler.TaskImplementation;
 import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class FoliaRegionScheduler implements SchedulerImplementation {
+public class FoliaRegionScheduler implements RegionSchedulerImplementation {
 
     private final @NotNull Plugin plugin;
     private final @NotNull RegionScheduler regionScheduler;

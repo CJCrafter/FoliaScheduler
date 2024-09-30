@@ -1,5 +1,6 @@
 package com.cjcrafter.foliascheduler;
 
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -248,4 +249,19 @@ public interface AsyncSchedulerImplementation {
         // assumes the time unit is server ticks. Since 20 ticks = 1000ms, we can convert the delay to milliseconds
         return runAtFixedRate(runnable, delay * 50, ticks * 50, TimeUnit.MILLISECONDS);
     }
+
+
+    /**
+     * Cancels all async tasks that were scheduled using your {@link Plugin}
+     * instance.
+     *
+     * <p>Note that the behavior of this method changes depending on the
+     * server implementation. For example, in Spigot, this method will cancel
+     * all tasks (sync + async) scheduled by the plugin, while in Paper/Folia,
+     * this method will only cancel tasks scheduled using the async scheduler.
+     *
+     * @see GlobalSchedulerImplementation#cancelTasks()
+     * @see <a href="https://github.com/CJCrafter/FoliaScheduler/issues/28">Issue #28</a>
+     */
+    void cancelTasks();
 }
