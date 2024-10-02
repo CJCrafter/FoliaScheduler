@@ -109,8 +109,8 @@ public final class ReflectionUtil {
     }
 
     /**
-     * Returns the org.bukkit.craftbukkit {@link Class} object with the specified relative path.
-     * This method calls {@link #getClass(String)}.
+     * Returns the {@link Class} object from the org.bukkit.craftbukkit package with the specified
+     * relative path. This method calls {@link #getClass(String)}.
      *
      * <p>For example, to get the class <code>org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer</code>,
      * you would call <code>getCraftBukkitClass("entity.CraftPlayer")</code>.

@@ -2,7 +2,6 @@ package com.cjcrafter.foliascheduler.util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sun.reflect.CallerSensitive;
 
 import java.lang.reflect.Field;
 
@@ -42,7 +41,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#get
      */
-    @CallerSensitive
     public boolean getBoolean(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.getBoolean(obj);
@@ -80,7 +78,6 @@ public class FieldAccessor {
      * @throws NullPointerException if the specified object is null and the field is an instance field.
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      */
-    @CallerSensitive
     public @Nullable Object get(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.get(obj);
@@ -132,7 +129,6 @@ public class FieldAccessor {
      * @throws NullPointerException if the specified object is null and the field is an instance field.
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      */
-    @CallerSensitive
     public void set(@Nullable Object obj, @Nullable Object value) throws IllegalArgumentException {
         try {
             field.set(obj, value);
@@ -154,7 +150,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#set
      */
-    @CallerSensitive
     public void setFloat(@Nullable Object obj, float f) throws IllegalArgumentException {
         try {
             field.setFloat(obj, f);
@@ -175,7 +170,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#get
      */
-    @CallerSensitive
     public byte getByte(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.getByte(obj);
@@ -197,7 +191,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#set
      */
-    @CallerSensitive
     public void setBoolean(@Nullable Object obj, boolean z) throws IllegalArgumentException {
         try {
             field.setBoolean(obj, z);
@@ -218,7 +211,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#get
      */
-    @CallerSensitive
     public char getChar(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.getChar(obj);
@@ -240,7 +232,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#set
      */
-    @CallerSensitive
     public void setDouble(@Nullable Object obj, double d) throws IllegalArgumentException {
         try {
             field.setDouble(obj, d);
@@ -262,7 +253,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#set
      */
-    @CallerSensitive
     public void setByte(@Nullable Object obj, byte b) throws IllegalArgumentException {
         try {
             field.setByte(obj, b);
@@ -283,7 +273,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#get
      */
-    @CallerSensitive
     public short getShort(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.getShort(obj);
@@ -305,7 +294,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#set
      */
-    @CallerSensitive
     public void setChar(@Nullable Object obj, char c) throws IllegalArgumentException {
         try {
             field.setChar(obj, c);
@@ -326,7 +314,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#get
      */
-    @CallerSensitive
     public int getInt(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.getInt(obj);
@@ -347,7 +334,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#get
      */
-    @CallerSensitive
     public long getLong(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.getLong(obj);
@@ -369,7 +355,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#set
      */
-    @CallerSensitive
     public void setShort(@Nullable Object obj, short s) throws IllegalArgumentException {
         try {
             field.setShort(obj, s);
@@ -391,7 +376,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#set
      */
-    @CallerSensitive
     public void setInt(@Nullable Object obj, int i) throws IllegalArgumentException {
         try {
             field.setInt(obj, i);
@@ -412,7 +396,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#get
      */
-    @CallerSensitive
     public float getFloat(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.getFloat(obj);
@@ -433,7 +416,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#get
      */
-    @CallerSensitive
     public double getDouble(@Nullable Object obj) throws IllegalArgumentException {
         try {
             return field.getDouble(obj);
@@ -455,7 +437,6 @@ public class FieldAccessor {
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      * @see Field#set
      */
-    @CallerSensitive
     public void setLong(@Nullable Object obj, long l) throws IllegalArgumentException {
         try {
             field.setLong(obj, l);

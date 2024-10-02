@@ -2,7 +2,6 @@ package com.cjcrafter.foliascheduler.util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sun.reflect.CallerSensitive;
 
 import java.lang.reflect.Method;
 
@@ -65,7 +64,6 @@ public class MethodInvoker {
      * @throws NullPointerException if the specified object is null and the method is an instance method.
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      */
-    @CallerSensitive
     public @Nullable Object invoke(@Nullable Object obj, Object... args) throws IllegalArgumentException {
         try {
             return method.invoke(obj, args);

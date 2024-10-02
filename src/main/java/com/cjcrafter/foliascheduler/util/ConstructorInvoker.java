@@ -1,7 +1,6 @@
 package com.cjcrafter.foliascheduler.util;
 
 import org.jetbrains.annotations.NotNull;
-import sun.reflect.CallerSensitive;
 
 import java.lang.reflect.Constructor;
 
@@ -61,7 +60,6 @@ public class ConstructorInvoker<T> {
      * @throws WrappedReflectiveOperationException if the underlying constructor throws an exception.
      * @throws ExceptionInInitializerError if the initialization provoked by this method fails.
      */
-    @CallerSensitive
     public @NotNull T newInstance(Object... initargs) throws IllegalArgumentException {
         try {
             return constructor.newInstance(initargs);
