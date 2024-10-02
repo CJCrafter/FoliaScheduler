@@ -257,8 +257,8 @@ public final class ReflectionUtil {
      * Returns the {@link MethodInvoker} for the specified method. If no such method exists, an
      * {@link IllegalArgumentException} is thrown.
      *
-     * <p>This method can be used to get the nth method of a certain return type in a class. For example,
-     * to get the 2nd method with return type void in a class, you would call
+     * <p>This method can be used to get the <code>n</code>th method of a certain return type in a
+     * class. For example, to get the 2nd method with return type void in a class, you would call
      * <code>getMethod(clazz, void.class, 2, null, parameterTypes)</code>.
      *
      * @param clazz The class that owns the method.
