@@ -39,14 +39,10 @@ java {
 }
 
 tasks {
-    jar {
-        enabled = false  // disable default jar task, since we use shadowJar
-    }
-
     shadowJar {
         archiveFileName.set("$githubRepo-$version.jar")
+        archiveClassifier.set("")
 
-        // include spigot and folia subprojects in jar
         dependsOn(":folia:jar", ":spigot:jar")
         from(zipTree(project(":spigot").tasks.jar.get().archiveFile)) {
             exclude("META-INF/**")
@@ -55,7 +51,6 @@ tasks {
             exclude("META-INF/**")
         }
 
-        // relocate essential libs
         relocate("xyz.jpenilla.reflectionremapper", "com.cjcrafter.foliascheduler.reflectionremapper")
         relocate("net.fabricmc.mappingio", "com.cjcrafter.foliascheduler.mappingio")
     }
@@ -72,9 +67,11 @@ tasks {
     }
 
     named<Jar>("sourcesJar") {
+        dependsOn(":folia:jar", ":spigot:jar")
+
         from(sourceSets.main.get().allSource)
-        from(project(":spigot").sourceSets.main.get().allSource)
-        from(project(":folia").sourceSets.main.get().allSource)
+        //from(project(":spigot").sourceSets.main.get().allSource)
+        //from(project(":folia").sourceSets.main.get().allSource)
     }
 
     test {
@@ -106,7 +103,12 @@ signing {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"])
+            // Use the 'shadow' component for publishing
+            from(components["shadow"])
+
+            // Include sources and javadoc jars
+            artifact(tasks.named<Jar>("sourcesJar").get())
+            artifact(tasks.named<Jar>("javadocJar").get())
 
             pom {
                 name.set(githubRepo)
