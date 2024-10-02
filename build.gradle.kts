@@ -40,7 +40,13 @@ java {
 
 tasks {
     jar {
-        from(sourceSets.main.get().output)
+        enabled = false  // disable default jar task, since we use shadowJar
+    }
+
+    shadowJar {
+        archiveFileName.set("$githubRepo-$version.jar")
+
+        // include spigot and folia subprojects in jar
         dependsOn(":folia:jar", ":spigot:jar")
         from(zipTree(project(":spigot").tasks.jar.get().archiveFile)) {
             exclude("META-INF/**")
@@ -48,6 +54,10 @@ tasks {
         from(zipTree(project(":folia").tasks.jar.get().archiveFile)) {
             exclude("META-INF/**")
         }
+
+        // relocate essential libs
+        relocate("xyz.jpenilla.reflectionremapper", "com.cjcrafter.foliascheduler.reflectionremapper")
+        relocate("net.fabricmc.mappingio", "com.cjcrafter.foliascheduler.mappingio")
     }
 
     javadoc {
