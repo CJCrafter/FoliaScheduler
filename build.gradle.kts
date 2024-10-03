@@ -2,6 +2,7 @@ plugins {
     `java-library`
     `maven-publish`
     signing
+    id("com.gradleup.shadow") version "8.3.2"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
@@ -21,6 +22,9 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:24.1.0")
 
+    // Remapping classes in paper 1.20.5+
+    implementation("xyz.jpenilla:reflection-remapper:0.1.1")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
@@ -35,8 +39,10 @@ java {
 }
 
 tasks {
-    jar {
-        from(sourceSets.main.get().output)
+    shadowJar {
+        archiveFileName.set("$githubRepo-$version.jar")
+        archiveClassifier.set("")
+
         dependsOn(":folia:jar", ":spigot:jar")
         from(zipTree(project(":spigot").tasks.jar.get().archiveFile)) {
             exclude("META-INF/**")
@@ -44,6 +50,9 @@ tasks {
         from(zipTree(project(":folia").tasks.jar.get().archiveFile)) {
             exclude("META-INF/**")
         }
+
+        relocate("xyz.jpenilla.reflectionremapper", "com.cjcrafter.foliascheduler.reflectionremapper")
+        relocate("net.fabricmc.mappingio", "com.cjcrafter.foliascheduler.mappingio")
     }
 
     javadoc {
@@ -58,9 +67,11 @@ tasks {
     }
 
     named<Jar>("sourcesJar") {
+        dependsOn(":folia:jar", ":spigot:jar")
+
         from(sourceSets.main.get().allSource)
-        from(project(":spigot").sourceSets.main.get().allSource)
-        from(project(":folia").sourceSets.main.get().allSource)
+        //from(project(":spigot").sourceSets.main.get().allSource)
+        //from(project(":folia").sourceSets.main.get().allSource)
     }
 
     test {
@@ -92,7 +103,12 @@ signing {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"])
+            // Use the 'shadow' component for publishing
+            from(components["shadow"])
+
+            // Include sources and javadoc jars
+            artifact(tasks.named<Jar>("sourcesJar").get())
+            artifact(tasks.named<Jar>("javadocJar").get())
 
             pom {
                 name.set(githubRepo)
