@@ -13,7 +13,8 @@ you can now schedule tasks on entities, regions, asynchronously, and more!
 * Spigot/Paper 1.12.2+ (and *likely* any older version)
 * Task chaining (`CompletableFuture` support)
 * Easy task cancellation through both `Consumer<TaskImplementation>` and return values.
-* `ServerVersions` and `MinecraftVersions` utility classes for checking server type and version. 
+* [`ServerVersions`](https://github.com/CJCrafter/FoliaScheduler/blob/master/src/main/java/com/cjcrafter/foliascheduler/util/ServerVersions.java) and [`MinecraftVersions`](https://github.com/CJCrafter/FoliaScheduler/blob/master/src/main/java/com/cjcrafter/foliascheduler/util/MinecraftVersions.java) utility classes for checking server type and version.
+* Reflection utilities with automatic remapping for Paper remapping compatibility.
 
 ## How it works
 We simply try to use Folia's scheduler (included in paper server jars) if it's available. If not, we fallback to
@@ -113,25 +114,22 @@ tasks.shadowJar {
 </details>
 
 ## How do I convert my whole plugin to Folia?
-Pretty much any plugin is already "compatible" with Folia. Usually, the only change you need to worry about
-is the scheduler. Any usage of 
+Your plugin is *SO CLOSE* to working on Folia, except you need to change usage of 
 [`BukkitRunnable`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/scheduler/BukkitRunnable.html) and 
-[`Bukkit#getScheduler`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Bukkit.html#getScheduler()) will
-need to be replaced.
+[`Bukkit#getScheduler`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Bukkit.html#getScheduler()),
+and add `folia-supported: true` to your plugin.yml. 
 
-You'll also need to add `folia-supported: true` to your plugin.yml. 
-
-Here are some PRs that show how to convert a plugin to Folia:
+Not sure where to start? Take a look at these projects that used this library to add Folia:
 * [WeaponMechanics](https://github.com/WeaponMechanics/MechanicsMain/pull/433/)
-* (Do you have a PR that shows how to convert a plugin to Folia using this lib? Let me know, or just make a PR to add it here!)
+* [VivecraftSpigot](https://github.com/CJCrafter/VivecraftSpigot/pull/5)
 
 #### Thread safety tips
 * Before modifying any block/entity, you can check if your thread is correct by using:
   * `ServerImplementation#isOwnedByCurrentRegion(Entity)`
   * `ServerImplementation#isOwnedByCurrentRegion(Block)`
 * Typically, you should not use `ServerImplementation#async()` unless you are doing I/O operations or heavy calculations.
-  * When you use async, you should probably use a callback... See examples below...
-* It's generally safe to send packets to players on any thread, since it doesn't modify the state of anything. 
+  * When you use async, you should probably use a sync callback (See below)
+* It is safe to send packets to players on any thread. 
 
 ## How do I check the server's version?
 We provide 2 utility classes:
@@ -192,4 +190,20 @@ We provide 2 utility classes:
     composed.thenAccept(task -> {
         System.out.println("We finished everything now!");
     });
+```
+
+## Using Reflection
+Paper and Spigot often disagree on what to name a class, field, or method. This is a problem
+if you plan on using reflection to access these classes, like:
+```java
+    Class.forName("net.minecraft.world.entity.monster.EntityCreeper");  // Works on Spigot servers
+    Class.forName("net.minecraft.world.entity.monster.Creeper");  // Works on Paper servers
+```
+
+To solve this, we provide a utility class called [`ReflectionUtil`](https://github.com/CJCrafter/FoliaScheduler/blob/master/src/main/java/com/cjcrafter/foliascheduler/util/ReflectionUtil.java)
+that will automatically remap classes, fields, and methods for you. 
+
+```java
+    // Always provide a Spigot-mapped class, and we'll remap as needed
+    Class<?> entityCreeper = ReflectionUtil.getMinecraftClass("net.minecraft.world.entity.monster.EntityCreeper");
 ```
