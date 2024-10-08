@@ -5,8 +5,11 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.CompletableFuture;
 
 public interface ServerImplementation {
 
@@ -139,4 +142,35 @@ public interface ServerImplementation {
      * @see <a href="https://github.com/CJCrafter/FoliaScheduler/issues/28">Issue #28</a>
      */
     void cancelTasks();
+
+    /**
+     * Teleports an entity to a location. If chunks need to be loaded, those chunks will be loaded
+     * asynchronously. Shortcut for {@link #teleportAsync(Entity, Location, PlayerTeleportEvent.TeleportCause)}.
+     *
+     * @param entity The entity to teleport
+     * @param location The location to teleport the entity to
+     * @return A future that completes when the entity is teleported, or the teleport fails
+     */
+    default @NotNull CompletableFuture<Boolean> teleportAsync(@NotNull Entity entity, @NotNull Location location) {
+        return teleportAsync(entity, location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+    }
+
+    /**
+     * Teleports an entity to a location. If chunks need to be loaded, those chunks will be loaded
+     * asynchronously.
+     *
+     * <p>The returned {@link CompletableFuture future} will complete when the entity is teleported,
+     * or the teleport fails. If the teleport fails, the future will complete with a value of
+     * {@code false}.
+     *
+     * <p>Note that this method is only asynchronous on Paper servers, versions 1.13 and later. On
+     * other servers, this method will be delegated to a synchronous task that executed
+     * {@link Entity#teleport(Location)} in the main thread (which may lead to lag spikes).
+     *
+     * @param entity The entity to teleport
+     * @param location The location to teleport the entity to
+     * @param cause The cause of the teleport
+     * @return A future that completes when the entity is teleported, or the teleport fails
+     */
+    @NotNull CompletableFuture<Boolean> teleportAsync(@NotNull Entity entity, @NotNull Location location, @NotNull PlayerTeleportEvent.TeleportCause cause);
 }

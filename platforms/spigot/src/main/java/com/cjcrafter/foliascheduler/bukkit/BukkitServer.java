@@ -9,9 +9,13 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 @ApiStatus.Internal
 public class BukkitServer implements ServerImplementation {
@@ -87,5 +91,26 @@ public class BukkitServer implements ServerImplementation {
     @Override
     public void cancelTasks() {
         owningPlugin.getServer().getScheduler().cancelTasks(owningPlugin);
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Boolean> teleportAsync(@NotNull Entity entity, @NotNull Location location, PlayerTeleportEvent.@NotNull TeleportCause cause) {
+        // Check if the teleportAsync method is supported
+        if (false) {
+            // TODO
+        }
+
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        entity(entity).run(task -> {
+            try {
+                entity.teleport(location);
+                future.complete(true);
+            } catch (Throwable ex) {
+                owningPlugin.getLogger().log(Level.SEVERE, "Failed to teleport entity", ex);
+                future.complete(false);
+            }
+        });
+
+        return future;
     }
 }
