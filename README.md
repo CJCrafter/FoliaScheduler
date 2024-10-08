@@ -11,14 +11,14 @@ you can now schedule tasks on entities, regions, asynchronously, and more!
 * Java 1.8+ (but you will need a JDK of 17+ to shade the Folia compatibility classes!)
 * Folia 1.20+
 * Spigot/Paper 1.12.2+ (and *likely* any older version)
-* Task chaining (`CompletableFuture` support)
-* Easy task cancellation through both `Consumer<TaskImplementation>` and return values.
+* Task chaining w/ callback values (`CompletableFuture<T>` support)
+* Easy task cancellation through both `Consumer<TaskImplementation<T>>` and return values.
 * [`ServerVersions`](https://github.com/CJCrafter/FoliaScheduler/blob/master/src/main/java/com/cjcrafter/foliascheduler/util/ServerVersions.java) and [`MinecraftVersions`](https://github.com/CJCrafter/FoliaScheduler/blob/master/src/main/java/com/cjcrafter/foliascheduler/util/MinecraftVersions.java) utility classes for checking server type and version.
-* Reflection utilities with automatic remapping for Paper remapping compatibility.
+* [`ReflectionUtil`](https://github.com/CJCrafter/FoliaScheduler/blob/master/src/main/java/com/cjcrafter/foliascheduler/util/ReflectionUtil.java) with automatic remapping for Paper remapping compatibility.
 
 ## How it works
-We simply try to use Folia's scheduler (included in paper server jars) if it's available. If not, we fallback to
-Spigot's scheduler (using `BukkitRunnable`, which allows basically any server version to use).
+We use Folia's scheduler (included in paper server jars) if it is available. If not, we fallback to
+Spigot's scheduler, `BukkitRunnable`. This adds support for practically any server. 
 
 ## Maven
 ```xml
@@ -128,7 +128,7 @@ Not sure where to start? Take a look at these projects that used this library to
   * `ServerImplementation#isOwnedByCurrentRegion(Entity)`
   * `ServerImplementation#isOwnedByCurrentRegion(Block)`
 * Typically, you should not use `ServerImplementation#async()` unless you are doing I/O operations or heavy calculations.
-  * When you use async, you should probably use a sync callback (See below)
+  * When you use async, you should probably use a sync callback (See examples below)
 * It is safe to send packets to players on any thread. 
 
 ## How do I check the server's version?
@@ -193,15 +193,16 @@ We provide 2 utility classes:
 ```
 
 ## Using Reflection
-Paper and Spigot often disagree on what to name a class, field, or method. This is a problem
-if you plan on using reflection to access these classes, like:
+Paper and Spigot often "*disagree*" on what to name a class, field, or method. This is a
+major problem if you plan on using reflection to access these classes. Like this example:
 ```java
     Class.forName("net.minecraft.world.entity.monster.EntityCreeper");  // Works on Spigot servers
     Class.forName("net.minecraft.world.entity.monster.Creeper");  // Works on Paper servers
 ```
 
 To solve this, we provide a utility class called [`ReflectionUtil`](https://github.com/CJCrafter/FoliaScheduler/blob/master/src/main/java/com/cjcrafter/foliascheduler/util/ReflectionUtil.java)
-that will automatically remap classes, fields, and methods for you. 
+that will automatically remap classes, fields, and methods for you. The example
+above can be solved by using the code below:
 
 ```java
     // Always provide a Spigot-mapped class, and we'll remap as needed
