@@ -10,9 +10,12 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
 public class FoliaServer implements ServerImplementation {
@@ -87,5 +90,10 @@ public class FoliaServer implements ServerImplementation {
     public void cancelTasks() {
         globalScheduler.cancelTasks();
         asyncScheduler.cancelTasks();
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Boolean> teleportAsync(@NotNull Entity entity, @NotNull Location location, @NotNull PlayerTeleportEvent.TeleportCause cause) {
+        return entity.teleportAsync(location, cause);
     }
 }

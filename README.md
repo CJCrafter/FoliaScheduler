@@ -25,7 +25,7 @@ Spigot's scheduler, `BukkitRunnable`. This adds support for practically any serv
 <dependency>
     <groupId>com.cjcrafter</groupId>
     <artifactId>foliascheduler</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
 </dependency>
 ```
 
@@ -37,7 +37,7 @@ Spigot's scheduler, `BukkitRunnable`. This adds support for practically any serv
     <dependency>
         <groupId>com.cjcrafter</groupId>
         <artifactId>foliascheduler</artifactId>
-        <version>0.5.0</version>
+        <version>0.6.0</version>
     </dependency>
 </dependencies>
 
@@ -76,7 +76,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.cjcrafter:foliascheduler:0.5.0")
+    implementation("com.cjcrafter:foliascheduler:0.6.0")
 }
 ```
 
@@ -97,7 +97,7 @@ repositories {
 
 dependencies {
     // TODO add your version of Spigot/Paper here
-    implementation("com.cjcrafter:foliascheduler:0.5.0")
+    implementation("com.cjcrafter:foliascheduler:0.6.0")
 }
 
 // See https://github.com/Minecrell/plugin-yml
