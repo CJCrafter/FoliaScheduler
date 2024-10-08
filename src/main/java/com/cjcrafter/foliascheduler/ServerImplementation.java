@@ -164,7 +164,7 @@ public interface ServerImplementation {
      * {@code false}.
      *
      * <p>Note that this method is only asynchronous on Paper servers, versions 1.13 and later. On
-     * other servers, this method will be delegated to a synchronous task that executed
+     * other servers, this method will be delegated to a synchronous task that executes
      * {@link Entity#teleport(Location)} in the main thread (which may lead to lag spikes).
      *
      * @param entity The entity to teleport
