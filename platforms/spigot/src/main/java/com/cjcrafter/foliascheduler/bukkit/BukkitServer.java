@@ -5,6 +5,9 @@ import com.cjcrafter.foliascheduler.EntitySchedulerImplementation;
 import com.cjcrafter.foliascheduler.GlobalSchedulerImplementation;
 import com.cjcrafter.foliascheduler.RegionSchedulerImplementation;
 import com.cjcrafter.foliascheduler.ServerImplementation;
+import com.cjcrafter.foliascheduler.util.MethodInvoker;
+import com.cjcrafter.foliascheduler.util.ReflectionUtil;
+import com.cjcrafter.foliascheduler.util.WrappedReflectiveOperationException;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -13,7 +16,10 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -25,12 +31,21 @@ public class BukkitServer implements ServerImplementation {
     private final @NotNull BukkitRegionScheduler region;
     private final @NotNull BukkitAsyncScheduler async;
 
+    // On Paper servers, the teleportAsync method is supported back to 1.13
+    private @Nullable MethodInvoker teleportAsyncMethod;
+
     @ApiStatus.Internal
     public BukkitServer(@NotNull Plugin owningPlugin) {
         this.owningPlugin = owningPlugin;
         this.sync = new BukkitSyncScheduler(owningPlugin);
         this.region = new BukkitRegionScheduler(owningPlugin);
         this.async = new BukkitAsyncScheduler(owningPlugin);
+
+        try {
+            teleportAsyncMethod = ReflectionUtil.getMethod(Entity.class, "teleportAsync", Location.class, PlayerTeleportEvent.TeleportCause.class);
+        } catch (WrappedReflectiveOperationException ignore) {
+            // This happens on older paper servers, or plain Spigot servers
+        }
     }
 
     @Override
@@ -95,11 +110,14 @@ public class BukkitServer implements ServerImplementation {
 
     @Override
     public @NotNull CompletableFuture<Boolean> teleportAsync(@NotNull Entity entity, @NotNull Location location, PlayerTeleportEvent.@NotNull TeleportCause cause) {
-        // Check if the teleportAsync method is supported
-        if (false) {
-            // TODO
+        // Check if the teleportAsync method is supported (Paper 1.13+)
+        if (teleportAsyncMethod != null) {
+            Object result = teleportAsyncMethod.invoke(entity, location, cause);
+            return (CompletableFuture<Boolean>) Objects.requireNonNull(result);
         }
 
+        // Fallback to the synchronous teleport method, executed 1 tick later on the main thread
+        // to allow this method to be called asynchronously.
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         entity(entity).run(task -> {
             try {
