@@ -212,6 +212,8 @@ public final class MinecraftVersions {
     public static final @NotNull Update TRICKY_TRIALS = registerUpdate(new Update(1, 21, update -> {
         update.version(0, 1); // 1.21
         update.version(1, 1); // 1.21.1
+        update.version(2, 2); // 1.21.2
+        update.version(3, 2); // 1.21.3
     }));
 
     /**
