@@ -60,7 +60,7 @@ public final class ServerVersions {
      * @return the major JRE version
      */
     public static int getJavaVersion() {
-        if (javaVersion != -1) {
+        if (javaVersion == -1) {
             try {
                 String version = System.getProperty("java.version");
                 if (version.startsWith("1.")) {
