@@ -1,12 +1,13 @@
 package com.cjcrafter.foliascheduler.util;
 
 /**
- * Utility class to determine the fork type of the server.
+ * Utility class containing methods to quickly grab information of the server's runtime.
  */
 public final class ServerVersions {
 
     private static Boolean isPaper = null;
     private static Boolean isFolia = null;
+    private static int javaVersion = -1;
 
     private ServerVersions() {
         // Prevent instantiation
@@ -47,5 +48,37 @@ public final class ServerVersions {
             }
         }
         return isFolia;
+    }
+
+    /**
+     * Returns the JRE version (Java version) that the server is running.
+     * <p>
+     * This method only returns the "major" component of the Java version. For example, if the server
+     * is running Java 11.0.1, this method will return 11. If the server is running Java 1.8.0_191, this
+     * method will return 8.
+     *
+     * @return the major JRE version
+     */
+    public static int getJavaVersion() {
+        if (javaVersion == -1) {
+            try {
+                String version = System.getProperty("java.version");
+                if (version.startsWith("1.")) {
+                    version = version.substring(2, 3);
+                } else {
+                    int dot = version.indexOf(".");
+                    if (dot != -1)
+                        version = version.substring(0, dot);
+                }
+                // IF version is something like 18-ea ->
+                version = version.split("-")[0];
+
+                javaVersion = Integer.parseInt(version);
+            } catch (Throwable throwable) {
+                throw new RuntimeException("Failed to determine Java version", throwable);
+            }
+        }
+
+        return javaVersion;
     }
 }
