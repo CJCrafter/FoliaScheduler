@@ -200,18 +200,21 @@ public final class MinecraftVersions {
         update.version(0, 1); // 1.20
         update.version(1, 1); // 1.20.1
         update.version(2, 2); // 1.20.2
-        update.version(3, 3); // 1.20.3
+        update.version(3, 3); // 1.20.3 (Bats and Pots)
         update.version(4, 3); // 1.20.4
-        update.version(5, 4); // 1.20.5
+        update.version(5, 4); // 1.20.5 (Armored Paws)
         update.version(6, 4); // 1.20.6
     }));
 
     /**
-     * 1.21, the dungeons update (mace, potions, paintings, etc.)
+     * 1.21, the dungeons update (mace, new potions, new paintings, etc.)
      */
     public static final @NotNull Update TRICKY_TRIALS = registerUpdate(new Update(1, 21, update -> {
         update.version(0, 1); // 1.21
         update.version(1, 1); // 1.21.1
+        update.version(2, 2); // 1.21.2 (Bundles of Bravery)
+        update.version(3, 2); // 1.21.3
+        update.version(4, 3); // 1.21.4 (The Garden Awakens)
     }));
 
     /**
