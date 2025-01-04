@@ -120,6 +120,11 @@ public final class ReflectionUtil {
      * @param <T> the type of the class
      */
     public static <T> @NotNull Class<T> getCraftBukkitClass(@NotNull String classPath) {
+        // The version data was stripped from the package name in Paper servers 1.20.5+
+        if (ServerVersions.isPaper() && MinecraftVersions.TRAILS_AND_TAILS.get(5).isAtLeast()) {
+            return getClass("org.bukkit.craftbukkit." + classPath);
+        }
+
         return getClass("org.bukkit.craftbukkit." + MinecraftVersions.getCurrent() + "." + classPath);
     }
 

@@ -2,13 +2,13 @@ plugins {
     `java-library`
     `maven-publish`
     signing
-    id("com.gradleup.shadow") version "8.3.2"
+    id("com.gradleup.shadow") version "8.3.5"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     kotlin("jvm")
 }
 
 group = "com.cjcrafter"
-version = "0.6.2"
+version = "0.6.3"
 
 val githubOwner = "CJCrafter"
 val githubRepo = "FoliaScheduler"
