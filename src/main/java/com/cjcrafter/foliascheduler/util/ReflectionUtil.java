@@ -202,8 +202,14 @@ public final class ReflectionUtil {
         }
 
         // If no field was found, recursively check super class
-        if (clazz.getSuperclass() != null)
-            return getField(clazz.getSuperclass(), fieldType, index, predicate);
+        try {
+            if (clazz.getSuperclass() != null)
+                return getField(clazz.getSuperclass(), fieldType, index, predicate);
+        } catch (IllegalArgumentException ex) {
+            // passthrough
+            if (!ex.getMessage().startsWith("No field of type "))
+                throw ex;
+        }
 
         throw new IllegalArgumentException("No field of type " + fieldType.getName() + " found in class " + clazz.getName());
     }
@@ -299,8 +305,14 @@ public final class ReflectionUtil {
         }
 
         // If no method was found, recursively check super class
-        if (clazz.getSuperclass() != null)
-            return getMethod(clazz.getSuperclass(), returnType, index, predicate, parameterTypes);
+        try {
+            if (clazz.getSuperclass() != null)
+                return getMethod(clazz.getSuperclass(), returnType, index, predicate, parameterTypes);
+        } catch (IllegalArgumentException ex) {
+            // passthrough
+            if (!ex.getMessage().startsWith("No method with return type "))
+                throw ex;
+        }
 
         throw new IllegalArgumentException("No method with return type " + returnType.getName() + " found in class " + clazz.getName());
     }
