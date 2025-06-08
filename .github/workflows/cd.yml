@@ -36,6 +36,10 @@ jobs:
       - name: Publish snapshot to Maven
         if: endsWith(steps.get-version.outputs.version, '-SNAPSHOT')
         run: ./gradlew publish --no-daemon
+
+      - name: Release with JReleaser
+        if: endsWith(steps.get-version.outputs.version, '-SNAPSHOT')
+        run: ./gradlew jreleaserRelease --no-daemon --no-configuration-cache
         env:
           JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.JRELEASER_MAVENCENTRAL_USERNAME }}
           JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.JRELEASER_MAVENCENTRAL_PASSWORD }}
