@@ -185,6 +185,10 @@ jreleaser {
             tagName.set("v{{projectVersion}}")
             draft.set(false)
             overwrite.set(true)
+
+            prerelease {
+                enabled.set(project.version.get().endsWith("-SNAPSHOT"))
+            }
             commitAuthor {
                 name.set("Collin Barber")
                 email.set("collinjbarber@gmail.com")

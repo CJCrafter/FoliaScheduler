@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Gradle Deploy
     permissions:
-      contents: read
+      contents: write
     if: "!endsWith(github.actor, '[bot]')"
 
     steps:
