@@ -183,6 +183,8 @@ jreleaser {
             name.set("FoliaScheduler")
             host.set("github.com")
             tagName.set("v{{projectVersion}}")
+            draft.set(false)
+            overwrite.set(true)
             commitAuthor {
                 name.set("Collin Barber")
                 email.set("collinjbarber@gmail.com")
