@@ -216,6 +216,7 @@ public final class MinecraftVersions {
         update.version(3, 2); // 1.21.3
         update.version(4, 3); // 1.21.4 (The Garden Awakens)
         update.version(5, 4); // 1.21.5 (Spring to Life)
+        update.version(6, 5); // 1.21.6 (Chase the Skies)
     }));
 
     /**
