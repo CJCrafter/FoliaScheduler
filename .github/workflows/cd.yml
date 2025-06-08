@@ -1,0 +1,41 @@
+name: Publish Snapshot
+
+on:
+  push:
+    # any branch in this repo
+    branches:
+      - '**'
+
+jobs:
+  publish-snapshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 8 & cache Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: gradle
+          # mount your ~/.m2/settings.xml so that 'stagingDeploy' is configured
+          server-id: stagingDeploy
+          settings-path: ${{ github.workspace }}
+
+      - name: Extract project version
+        id: get-version
+        run: |
+          echo "version=$(./gradlew -q properties \
+            | grep '^version:' \
+            | awk '{print $2}')" >> $GITHUB_OUTPUT
+
+      - name: Publish snapshot to Maven
+        if: endsWith(steps.get-version.outputs.version, '-SNAPSHOT')
+        run: ./gradlew publish --no-daemon
+        env:
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.JRELEASER_MAVENCENTRAL_USERNAME }}
+          JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.JRELEASER_MAVENCENTRAL_PASSWORD }}

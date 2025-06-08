@@ -1,17 +1,15 @@
+import org.jreleaser.model.Active
+
 plugins {
     `java-library`
     `maven-publish`
-    signing
     id("com.gradleup.shadow") version "8.3.5"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    kotlin("jvm")
+    id("org.jreleaser") version "1.18.0"
+    signing
 }
 
 group = "com.cjcrafter"
-version = "0.6.4"
-
-val githubOwner = "CJCrafter"
-val githubRepo = "FoliaScheduler"
+version = "0.7.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -29,7 +27,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 java {
@@ -42,7 +39,7 @@ java {
 
 tasks {
     shadowJar {
-        archiveFileName.set("$githubRepo-$version.jar")
+        archiveFileName.set("FoliaScheduler-$version.jar")
         archiveClassifier.set("")
 
         dependsOn(":folia:jar", ":spigot:jar")
@@ -81,44 +78,23 @@ tasks {
     }
 }
 
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username.set(System.getenv("OSSRH_USERNAME") ?: findProperty("OSSRH_USERNAME").toString())
-            password.set(System.getenv("OSSRH_PASSWORD") ?: findProperty("OSSRH_PASSWORD").toString())
-        }
-    }
-}
-
-signing {
-    isRequired = true
-    useInMemoryPgpKeys(
-        System.getenv("SIGNING_KEY_ID") ?: findProperty("SIGNING_KEY_ID").toString(),
-        System.getenv("SIGNING_PRIVATE_KEY") ?: findProperty("SIGNING_PRIVATE_KEY").toString(),
-        System.getenv("SIGNING_PASSWORD") ?: findProperty("SIGNING_PASSWORD").toString(),
-    )
-    sign(publishing.publications)
-}
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             // Use the 'shadow' component for publishing
             from(components["shadow"])
-
-            // Include sources and javadoc jars
             artifact(tasks.named<Jar>("sourcesJar").get())
             artifact(tasks.named<Jar>("javadocJar").get())
 
-            pom {
-                name.set(githubRepo)
-                description.set("Task scheduler for Spigot and Folia plugins")
-                url.set("https://github.com/$githubOwner/$githubRepo")
+            groupId = "com.cjcrafter"
+            artifactId = "foliascheduler"
+            version = project.version.toString()
 
-                groupId = group.toString()
-                artifactId = githubRepo.lowercase()
+            pom {
+                name.set("FoliaScheduler")
+                description.set("Task scheduler for Spigot and Folia plugins")
+                url.set("https://github.com/CJCrafter/FoliaScheduler")
 
                 licenses {
                     license {
@@ -134,10 +110,86 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:https://github.com/$githubOwner/$githubRepo.git")
-                    developerConnection.set("scm:git:ssh://github.com/$githubOwner/$githubRepo.git")
-                    url.set("https://github.com/$githubOwner/$githubRepo")
+                    connection.set("scm:git:git://github.com/CJCrafter/FoliaScheduler.git")
+                    developerConnection.set("scm:git:ssh://github.com/CJCrafter/FoliaScheduler.git")
+                    url.set("https://github.com/CJCrafter/FoliaScheduler")
                 }
+            }
+        }
+    }
+
+    // Deploy this repository locally for staging, then let the root project actually
+    // upload the maven repo using jReleaser
+    repositories {
+        maven {
+            name = "stagingDeploy"
+            url = layout.buildDirectory.dir("staging-deploy").map { it.asFile.toURI() }.get()
+        }
+    }
+}
+
+jreleaser {
+    project {
+        name.set("FoliaScheduler")
+        group = "com.cjcrafter"
+        version = project.version.get()
+        description = "Task scheduler for Spigot and Folia plugins"
+        authors.add("Collin Barber <collinjbarber@gmail.com>")
+        license = "MIT" // SPDX identifier
+
+        java {
+            groupId = "com.cjcrafter"
+            artifactId = "foliascheduler"
+            version = project.version.get()
+        }
+    }
+
+    signing {
+        active.set(Active.ALWAYS)
+        armored.set(true)
+    }
+
+    deploy {
+        maven {
+            mavenCentral {
+                create("releaseDeploy") {
+                    active.set(Active.RELEASE)
+                    url.set("https://central.sonatype.com/api/v1/publisher")
+                    // run `./gradlew publish` before deployment
+                    stagingRepository("build/staging-deploy")
+                    // Credentials (JRELEASER_MAVENCENTRAL_USERNAME, JRELEASER_MAVENCENTRAL_PASSWORD or JRELEASER_MAVENCENTRAL_TOKEN)
+                    // will be picked up from ~/.jreleaser/config.toml
+                }
+            }
+
+            nexus2 {
+                create("sonatypeSnapshots") {
+                    active.set(Active.SNAPSHOT)
+                    url.set("https://central.sonatype.com/repository/maven-snapshots/")
+                    snapshotUrl.set("https://central.sonatype.com/repository/maven-snapshots/")
+                    applyMavenCentralRules = true
+                    snapshotSupported = true
+                    closeRepository = true
+                    releaseRepository = true
+                    stagingRepository("build/staging-deploy")
+                }
+            }
+        }
+    }
+
+    release {
+        github {
+            repoOwner.set("CJCrafter")
+            name.set("FoliaScheduler")
+            host.set("github.com")
+            tagName.set("v{{projectVersion}}")
+            commitAuthor {
+                name.set("Collin Barber")
+                email.set("collinjbarber@gmail.com")
+            }
+            changelog {
+                formatted.set(Active.ALWAYS)
+                format.set("- {{commitShortHash}} {{commitTitle}}")
             }
         }
     }
