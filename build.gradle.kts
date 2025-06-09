@@ -177,25 +177,47 @@ jreleaser {
         }
     }
 
+    project {
+        snapshot {
+            fullChangelog.set(true)
+        }
+    }
+
     release {
         github {
             repoOwner.set("CJCrafter")
             name.set("FoliaScheduler")
             host.set("github.com")
+
+            val isSnapshot = project.version.get().endsWith("-SNAPSHOT")
+            releaseName.set(if (isSnapshot) "SNAPSHOT" else "v${project.version.get()}")
             tagName.set("v{{projectVersion}}")
             draft.set(false)
-            overwrite.set(true)
+            skipTag.set(isSnapshot)
+            overwrite.set(false)
+            update { enabled.set(isSnapshot) }
 
             prerelease {
-                enabled.set(project.version.get().endsWith("-SNAPSHOT"))
+                enabled.set(isSnapshot)
+                pattern.set(".*-SNAPSHOT")
             }
+
             commitAuthor {
                 name.set("Collin Barber")
                 email.set("collinjbarber@gmail.com")
             }
+
             changelog {
                 formatted.set(Active.ALWAYS)
+                preset.set("conventional-commits")
                 format.set("- {{commitShortHash}} {{commitTitle}}")
+                contributors {
+                    enabled.set(true)
+                    format.set("{{contributorUsernameAsLink}}")
+                }
+                hide {
+                    contributors.set(listOf("[bot]"))
+                }
             }
         }
     }
