@@ -11,12 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: Gradle Deploy
     permissions:
-      contents: read
+      contents: write
     if: "!endsWith(github.actor, '[bot]')"
 
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for accurate version extraction
 
       - name: Set up Java 8 & cache Gradle
         uses: actions/setup-java@v4
