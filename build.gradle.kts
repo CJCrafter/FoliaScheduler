@@ -3,7 +3,7 @@ import org.jreleaser.model.Active
 plugins {
     `java-library`
     `maven-publish`
-    id("com.gradleup.shadow") version "8.3.6"
+    id("com.gradleup.shadow") version "8.3.7"
     id("org.jreleaser") version "1.18.0"
     signing
 }
