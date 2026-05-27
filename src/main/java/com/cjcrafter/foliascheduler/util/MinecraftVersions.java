@@ -12,20 +12,30 @@ import java.util.regex.Pattern;
 /**
  * Utility class to check the current Minecraft version.
  * <p>
- * Minecraft updates all follow the `major.minor.patch` format. This utility
- * separates this into two classes: {@link Update} and {@link Version}. An {@link Update} is a
- * "named" update from Minecraft, such as "1.13" ({@link #UPDATE_AQUATIC}). If you
- * need to get more specific, you can use a {@link Version} object, which is a patch
- * for an {@link Update}, such as "1.13.2".
+ * Historically Minecraft used the {@code 1.major.minor} naming scheme (e.g.
+ * {@code 1.21.11}). Starting with the {@code Tiny Takeover} drop on
+ * March 24, 2026, Mojang switched to a {@code year.drop.hotfix} scheme
+ * (e.g. {@code 26.1.2}). This class transparently parses both formats:
+ * the first numeric component is treated as the "major" version, the
+ * second as the "minor" version, and the third (optional) as the
+ * "patch" / hotfix version.
  * <p>
- * You can get a specific {@link Version} object calling {@link Update#get(int)} with the patch
- * number.
+ * This utility separates versions into two classes: {@link Update} and
+ * {@link Version}. An {@link Update} is a "named" Minecraft update such
+ * as {@code 1.13} ({@link #UPDATE_AQUATIC}) or {@code 26.1}
+ * ({@link #TINY_TAKEOVER}). For more granularity use a {@link Version}
+ * object, which is a specific patch of an {@link Update} such as
+ * {@code 1.13.2} or {@code 26.1.2}.
  * <p>
- * Note that this utility will need to be updated to access newer versions of Minecraft. If
- * this utility is used on a newer version of Minecraft, it will be parsed into an "unknown"
- * version, which will still be able to function as expected (Using {@link Version#isAtLeast()}
- * will still work, for example). However, {@link #updates()} and {@link #versions()} will not
- * contain the newer versions.
+ * You can get a specific {@link Version} object by calling
+ * {@link Update#get(int)} with the patch number.
+ * <p>
+ * Note that this utility will need to be updated to access newer versions
+ * of Minecraft. If this utility is used on a newer version of Minecraft,
+ * it will be parsed into an "unknown" version, which will still function
+ * as expected ({@link Version#isAtLeast()} will still work, for example).
+ * However, {@link #updates()} and {@link #versions()} will not contain the
+ * newer versions.
  */
 public final class MinecraftVersions {
 
@@ -89,22 +99,24 @@ public final class MinecraftVersions {
 
     /**
      * Used internally to parse a version from a string.
+     * <p>
+     * This handles both the legacy {@code 1.X.Y} numbering and the newer
+     * {@code YY.D.H} (year.drop.hotfix) numbering introduced with
+     * Minecraft 26.1 in March 2026.
      *
      * @param versionString The version string.
      * @return The parsed version.
      */
     static @NotNull Version parseCurrentVersion(@NotNull String versionString) {
-        Pattern pattern = Pattern.compile("\\d+\\.\\d+(\\.\\d+)?");
+        Pattern pattern = Pattern.compile("(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?!\\.\\d)");
         Matcher matcher = pattern.matcher(versionString);
 
         if (!matcher.find())
             throw new IllegalArgumentException("Could not find any version in: " + versionString);
 
-        String currentVersion = matcher.group();
-        String[] parts = currentVersion.split("\\.");
-        int major = Integer.parseInt(parts[0]);
-        int minor = Integer.parseInt(parts[1]);
-        int patch = parts.length == 3 ? Integer.parseInt(parts[2]) : 0;
+        int major = Integer.parseInt(matcher.group(1));
+        int minor = Integer.parseInt(matcher.group(2));
+        int patch = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
 
         // Check if the version is for a Minecraft version that we know about
         Version version = allVersions.get(major + "." + minor + "." + patch);
@@ -207,7 +219,7 @@ public final class MinecraftVersions {
     }));
 
     /**
-     * 1.21, the dungeons update (mace, new potions, new paintings, etc.)
+     * 1.21, the dungeons update (mace, new potions, new paintings, etc.).
      */
     public static final @NotNull Update TRICKY_TRIALS = registerUpdate(new Update(1, 21, update -> {
         update.version(0, 1); // 1.21
@@ -225,7 +237,19 @@ public final class MinecraftVersions {
     }));
 
     /**
-     * Represents a "big" Minecraft update, e.g., 1.13 -> 1.14
+     * 26.1, the first drop of 2026 (released March 24, 2026).
+     *
+     * <p>Note that starting in version <code>26</code>, the protocol holds no
+     * meaning and is selected arbitrarily as the drop number for a given year.
+     */
+    public static final @NotNull Update TINY_TAKEOVER = registerUpdate(new Update(26, 1, update -> {
+        update.version(0, 1); // 26.1
+        update.version(1, 1); // 26.1.1
+        update.version(2, 1); // 26.1.2
+    }));
+
+    /**
+     * Represents a "big" Minecraft update, e.g., 1.13 -> 1.14 or 26.1 -> 26.2.
      */
     public static class Update implements Comparable<Update> {
         private final int major;
@@ -243,8 +267,10 @@ public final class MinecraftVersions {
         /**
          * Creates a new Update instance.
          *
-         * @param major The major version. Always 1.
-         * @param minor The minor version.
+         * @param major The major version. {@code 1} for the legacy {@code 1.X.Y}
+         *              scheme; the two-digit year (e.g. {@code 26}) for releases
+         *              from {@code 26.1} ({@link #TINY_TAKEOVER}) onward.
+         * @param minor The minor version (the "drop" number under the new scheme).
          * @param init A Consumer to initialize the versions for this update.
          */
         public Update(int major, int minor, @NotNull Consumer<Update> init) {
@@ -255,7 +281,12 @@ public final class MinecraftVersions {
         }
 
         /**
-         * Returns the major version, always 1.
+         * Returns the major version.
+         * <p>
+         * For legacy versions ({@code 1.12} through {@code 1.21}) this is
+         * always {@code 1}. For releases from {@code 26.1}
+         * ({@link #TINY_TAKEOVER}) onward, this is the two-digit year
+         * (e.g. {@code 26}).
          *
          * @return The major version.
          */
@@ -264,7 +295,8 @@ public final class MinecraftVersions {
         }
 
         /**
-         * Returns the minor version.
+         * Returns the minor version (the "drop" number under the new
+         * year-based scheme).
          *
          * @return The minor version.
          */
@@ -373,7 +405,11 @@ public final class MinecraftVersions {
     }
 
     /**
-     * Holds a specific version of an update, formatted in major.minor.patch. For example, 1.13.2.
+     * Holds a specific version of an update, formatted in
+     * {@code major.minor.patch}.
+     * <p>
+     * Examples: {@code 1.13.2} (legacy scheme) and {@code 26.1.2}
+     * (year-based scheme introduced in March 2026).
      */
     public static class Version implements Comparable<Version> {
 
@@ -428,6 +464,9 @@ public final class MinecraftVersions {
 
         /**
          * Returns the major version.
+         * <p>
+         * For legacy versions this is {@code 1}; for releases from
+         * {@code 26.1} onward this is the two-digit year (e.g. {@code 26}).
          *
          * @return The major version.
          */
@@ -454,14 +493,25 @@ public final class MinecraftVersions {
         }
 
         /**
-         * Returns the protocol version, like R1, R2, etc.
+         * Returns the protocol revision, like R1, R2, etc.
          * <p>
-         * If the version is "unknown" (not included in the utility), this will
-         * return -1. This happens usually because a new version of Minecraft was
-         * released after this utility was created... Be sure to keep this
-         * updated!
+         * For legacy versions ({@code 1.12} through {@code 1.21}) this
+         * is the CraftBukkit NMS package revision (e.g. {@code R7} for
+         * {@code 1.21.11} → {@code v1_21_R7}).
+         * <p>
+         * For releases from {@code 26.1} ({@link #TINY_TAKEOVER}) onward,
+         * Mojang ships the server jar unobfuscated and the historical
+         * NMS R-revision no longer corresponds to a real package on
+         * disk. To keep the {@link #toProtocolString()} format
+         * meaningful, this utility uses the convention that R equals
+         * the drop number (i.e. the minor version) for those versions,
+         * so {@code 26.1.x} → {@code R1}.
+         * <p>
+         * If the version is "unknown" (not included in this utility),
+         * this returns {@code -1}. This usually means a new version of
+         * Minecraft was released after this utility was last updated.
          *
-         * @return The protocol version.
+         * @return The protocol revision.
          */
         public int getProtocol() {
             return protocol;
@@ -513,7 +563,19 @@ public final class MinecraftVersions {
         }
 
         /**
-         * Returns the version in the protocol format, e.g., `v1_16_R3`.
+         * Returns the version in the CraftBukkit NMS package format,
+         * e.g. {@code v1_16_R3} or {@code v26_1_R1}.
+         * <p>
+         * For legacy versions ({@code 1.x.y}), this matches the real
+         * CraftBukkit package on disk.
+         * <p>
+         * For releases from {@code 26.1} onward, this is a synthetic
+         * identifier using the drop number as the R-revision (see
+         * {@link #getProtocol()}). Modern Paper builds do not actually
+         * relocate the CraftBukkit package, so this string should not
+         * be assumed to correspond to a package on disk for 1.20.5+
+         * Paper or for any 26.1+ build — it remains useful for legacy
+         * lookups and version identification.
          *
          * @return The version in protocol format.
          */
