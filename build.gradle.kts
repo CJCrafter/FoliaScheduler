@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.cjcrafter"
-version = "0.7.4-SNAPSHOT"
+version = "0.8.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
